@@ -9,11 +9,25 @@ type EmailFormProps = {
 export const EmailForm = ({ onChange }: EmailFormProps) => {
     const [state, setState] = useState({ email: '', subject: '', body: '' });
 
+    const [error, setError] = useState<string | null>(null);
+
+    // Simple email regex
+    const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
     useEffect(() => {
         if (!state.email) {
             onChange('');
+            setError(null);
             return;
         }
+
+        if (!isValidEmail(state.email)) {
+            setError('Invalid email format');
+            onChange(''); // Don't generate invalid QR
+            return;
+        }
+
+        setError(null);
         onChange(qrPayloads.email(state.email, state.subject, state.body));
     }, [state, onChange]);
 
@@ -25,6 +39,7 @@ export const EmailForm = ({ onChange }: EmailFormProps) => {
                     placeholder="johndoe@example.com"
                     value={state.email}
                     onChange={(e) => setState(prev => ({ ...prev, email: e.target.value }))}
+                    error={error || undefined}
                 />
             </div>
             <div className="space-y-2">

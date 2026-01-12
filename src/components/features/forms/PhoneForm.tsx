@@ -13,11 +13,46 @@ export const PhoneForm = ({ mode, onChange }: PhoneFormProps) => {
     const [number, setNumber] = useState('');
     const [message, setMessage] = useState('');
 
+    const [error, setError] = useState<string | null>(null);
+
+    // Allow +, -, space, (), digits. Must have at least 5 digits.
+    const isValidPhone = (p: string) => /^[+]?[\d\s-().]{5,30}$/.test(p);
+
     useEffect(() => {
         if (!number) {
             onChange('');
+            setError(null);
             return;
         }
+
+        if (!isValidPhone(number)) {
+            // Only show error if length is reasonable to start validating
+            // or if it contains invalid chars immediately
+            if (number.length > 2 && !/^[\d\s-().+]*$/.test(number)) {
+                setError('Invalid characters');
+            } else if (number.length > 5) {
+                // If long enough but fails regex (unlikely with above check, but for stricter patterns)
+                // Keeping it valid as long as chars are valid for now to avoid annoyance
+            }
+            // Actually, let's just enforce char set and min length for "validity"
+        }
+
+        if (!/^[\d\s-().+]+$/.test(number)) {
+            setError('Invalid characters in phone number');
+            onChange('');
+            return;
+        }
+
+        // Min length check
+        const digitCount = number.replace(/\D/g, '').length;
+        if (digitCount < 3) {
+            // Don't show error yet, just don't generate
+            setError(null);
+            onChange('');
+            return;
+        }
+
+        setError(null);
 
         if (mode === 'phone') {
             onChange(qrPayloads.phone(number));
@@ -36,6 +71,7 @@ export const PhoneForm = ({ mode, onChange }: PhoneFormProps) => {
                     placeholder="+1 555 012 3456"
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
+                    error={error || undefined}
                 />
             </div>
 
