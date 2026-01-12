@@ -8,6 +8,7 @@ import { HistoryPanel } from './components/features/HistoryPanel';
 import { useQR } from './hooks/useQR';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { CustomizationOptions } from './components/features/CustomizationPanel'; // Type
+import { AdSpace } from './components/features/AdSpace';
 import './index.css';
 
 function App() {
@@ -114,6 +115,11 @@ function App() {
             {activeTab === 'style' && (
               <StyleEditor options={options} onChange={setOptions} />
             )}
+          </div>
+
+          {/* Advertisement Space */}
+          <div className="mt-8 mb-4">
+            <AdSpace className="rounded-2xl" />
           </div>
 
         </main>
