@@ -1,5 +1,6 @@
-import { Ban } from 'lucide-react';
-import type { CustomizationOptions } from './CustomizationPanel'; // Reusing type for now or redefining
+import { Ban, Square, Circle, LayoutGrid } from 'lucide-react';
+import type { CustomizationOptions } from './CustomizationPanel';
+import { Input } from '../ui/Input';
 
 type StyleEditorProps = {
     options: CustomizationOptions;
@@ -9,20 +10,24 @@ type StyleEditorProps = {
 export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
     const handleColorChange = (key: 'dark' | 'light', value: string) => {
-        onChange({
-            ...options,
-            color: {
-                ...options.color,
-                [key]: value
-            }
-        });
+        onChange({ ...options, color: { ...options.color, [key]: value } });
     };
 
-    // Mock data for visual stubs
+    const update = (key: keyof CustomizationOptions, value: any) => {
+        onChange({ ...options, [key]: value });
+    };
+
     const frames = [
-        { id: 'none', label: 'No Frame', icon: Ban },
+        { id: 'none', label: 'None', icon: Ban },
         { id: 'classic', label: 'Classic', preview: 'border-2 border-white' },
         { id: 'pill', label: 'Pill', preview: 'rounded-full border-2 border-white' },
+        { id: 'polaroid', label: 'Polaroid', preview: 'bg-white pb-4' },
+    ];
+
+    const patterns = [
+        { id: 'square', label: 'Square', icon: Square },
+        { id: 'dot', label: 'Dots', icon: Circle },
+        { id: 'rounded', label: 'Rounded', icon: LayoutGrid },
     ];
 
     return (
@@ -53,35 +58,60 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                 </div>
             </div>
 
-            {/* Frames Section (Visual Stub) */}
+            {/* Pattern Type */}
             <div className="space-y-3">
-                <div className="flex justify-between items-end">
-                    <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Frames</h3>
-                    <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">Coming Soon</span>
-                </div>
-
+                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Pattern</h3>
                 <div className="grid grid-cols-3 gap-3">
-                    {frames.map((frame, idx) => (
-                        <div key={idx} className={`aspect-square bg-surface border ${idx === 0 ? 'border-primary bg-primary/10' : 'border-white/10'} rounded-xl flex flex-col items-center justify-center gap-2 opacity-${idx === 0 ? '100' : '50'}`}>
-                            {frame.icon ? <frame.icon size={20} /> : <div className={`w-8 h-6 ${frame.preview}`}></div>}
-                            <span className="text-[10px]">{frame.label}</span>
-                            {idx === 0 && <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></div>}
-                        </div>
+                    {patterns.map((p) => (
+                        <button
+                            key={p.id}
+                            onClick={() => update('pattern', p.id)}
+                            className={`py-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${options.pattern === p.id
+                                ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                                : 'bg-surface border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                }`}
+                        >
+                            <p.icon size={20} className={options.pattern === p.id ? 'fill-current' : ''} />
+                            <span className="text-xs font-medium">{p.label}</span>
+                        </button>
                     ))}
                 </div>
             </div>
 
-            {/* Patterns Section (Visual Stub) */}
+            {/* Frames Section */}
             <div className="space-y-3">
-                <div className="flex justify-between items-end">
-                    <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Patterns</h3>
-                    <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">Coming Soon</span>
-                </div>
-                <div className="grid grid-cols-4 gap-3">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="aspect-square bg-surface border border-white/10 rounded-xl opacity-50"></div>
+                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Frames</h3>
+
+                <div className="grid grid-cols-3 gap-3">
+                    {frames.map((frame) => (
+                        <button
+                            key={frame.id}
+                            onClick={() => update('frame', frame.id)}
+                            className={`aspect-square bg-surface border rounded-xl flex flex-col items-center justify-center gap-2 transition-all ${options.frame === frame.id
+                                ? 'bg-primary/10 border-primary text-white'
+                                : 'border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                }`}
+                        >
+                            {frame.icon
+                                ? <frame.icon size={24} />
+                                : <div className={`w-8 h-8 opacity-80 ${frame.preview}`}></div>
+                            }
+                            <span className="text-[10px] font-medium">{frame.label}</span>
+                        </button>
                     ))}
                 </div>
+
+                {/* Frame Text Input (Only if frame is active) */}
+                {options.frame !== 'none' && (
+                    <div className="animate-fade-in mt-2">
+                        <Input
+                            label="Frame Text"
+                            value={options.frameText}
+                            onChange={(e) => update('frameText', e.target.value)}
+                            placeholder="SCAN ME"
+                        />
+                    </div>
+                )}
             </div>
 
         </div>

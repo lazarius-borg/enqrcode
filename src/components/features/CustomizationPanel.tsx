@@ -8,6 +8,11 @@ export type CustomizationOptions = {
         light: string;
     };
     margin: number;
+    // New fields
+    pattern: 'square' | 'dot' | 'rounded';
+    frame: 'none' | 'classic' | 'pill' | 'polaroid';
+    frameText: string;
+    frameColor?: string; // Optional override
 };
 
 type CustomizationPanelProps = {

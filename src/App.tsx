@@ -17,7 +17,10 @@ function App() {
 
   const [options, setOptions] = useState<CustomizationOptions>({
     color: { dark: '#000000', light: '#ffffff00' },
-    margin: 1
+    margin: 1,
+    pattern: 'square',
+    frame: 'none',
+    frameText: 'SCAN ME'
   });
 
   const [, setHistory] = useLocalStorage<any[]>('enqrcode-history', []);
@@ -43,7 +46,10 @@ function App() {
   const { qrCodeData, loading } = useQR(content, {
     color: options.color,
     width: 1000,
-    margin: options.margin
+    margin: options.margin,
+    pattern: options.pattern,
+    frame: options.frame,
+    frameText: options.frameText
   });
 
   const handleDownload = () => {
