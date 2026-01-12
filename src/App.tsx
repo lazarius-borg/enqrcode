@@ -4,6 +4,7 @@ import { TabNavigation, type TabId } from './components/layout/TabNavigation';
 import { PreviewCard } from './components/features/PreviewCard';
 import { InputForms } from './components/features/InputForms';
 import { StyleEditor } from './components/features/StyleEditor';
+import { SettingsPanel } from './components/features/SettingsPanel';
 import { HistoryPanel } from './components/features/HistoryPanel';
 import { useQR } from './hooks/useQR';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -21,7 +22,9 @@ function App() {
     margin: 1,
     pattern: 'square',
     frame: 'none',
-    frameText: 'SCAN ME'
+    frameText: 'SCAN ME',
+    errorCorrectionLevel: 'M',
+    width: 1000
   });
 
   const [, setHistory] = useLocalStorage<any[]>('enqrcode-history', []);
@@ -46,11 +49,12 @@ function App() {
 
   const { qrCodeData, loading } = useQR(content, {
     color: options.color,
-    width: 1000,
+    width: options.width || 1000,
     margin: options.margin,
     pattern: options.pattern,
     frame: options.frame,
-    frameText: options.frameText
+    frameText: options.frameText,
+    errorCorrectionLevel: options.errorCorrectionLevel
   });
 
   const handleDownload = () => {
@@ -119,6 +123,10 @@ function App() {
 
             {activeTab === 'style' && (
               <StyleEditor options={options} onChange={setOptions} />
+            )}
+
+            {activeTab === 'settings' && (
+              <SettingsPanel options={options} onChange={setOptions} />
             )}
           </div>
 

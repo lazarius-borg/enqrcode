@@ -1,4 +1,4 @@
-import { FileText, Palette } from 'lucide-react';
+import { FileText, Palette, Settings } from 'lucide-react';
 
 export type TabId = 'content' | 'style' | 'history' | 'settings';
 
@@ -11,6 +11,7 @@ export const TabNavigation = ({ activeTab, onChange }: TabNavigationProps) => {
     const tabs = [
         { id: 'content', icon: FileText, label: 'Content' },
         { id: 'style', icon: Palette, label: 'Style' },
+        { id: 'settings', icon: Settings, label: 'Settings' },
         // { id: 'logo', icon: Image, label: 'Logo' }, // Future
         // { id: 'history', icon: Clock, label: 'History' },
     ] as const;

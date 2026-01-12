@@ -13,6 +13,8 @@ export type CustomizationOptions = {
     frame: 'none' | 'classic' | 'pill' | 'polaroid';
     frameText: string;
     frameColor?: string; // Optional override
+    errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
+    width?: number; // Output resolution
 };
 
 type CustomizationPanelProps = {
