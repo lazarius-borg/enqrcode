@@ -105,6 +105,11 @@ function App() {
             onShare={handleShare}
           />
 
+          {/* Advertisement Space */}
+          <div className="mb-6 mt-2">
+            <AdSpace className="rounded-2xl" />
+          </div>
+
           <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
 
           <div className="min-h-[300px] animate-fade-in">
@@ -117,10 +122,7 @@ function App() {
             )}
           </div>
 
-          {/* Advertisement Space */}
-          <div className="mt-8 mb-4">
-            <AdSpace className="rounded-2xl" />
-          </div>
+
 
         </main>
       </div>
