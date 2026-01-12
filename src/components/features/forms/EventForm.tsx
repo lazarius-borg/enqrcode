@@ -27,27 +27,32 @@ export const EventForm = ({ onChange }: EventFormProps) => {
     const startRef = useRef<HTMLInputElement>(null);
     const endRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            // Validation
-            if (data.start && data.end) {
-                if (new Date(data.start) >= new Date(data.end)) {
-                    setDateError('End time must be after start time');
-                    onChange(''); // Prevent generation
-                    return;
-                }
-            }
-            setDateError(null);
-
-            if (!data.title) {
-                onChange('');
+    // Sync to parent logic (validation + generation)
+    const syncToParent = () => {
+        // Validation
+        if (data.start && data.end) {
+            if (new Date(data.start) >= new Date(data.end)) {
+                setDateError('End time must be after start time');
+                onChange(''); // Prevent generation
                 return;
             }
-            onChange(qrPayloads.event(data));
-        }, 500);
+        }
+        setDateError(null);
 
-        return () => clearTimeout(timer);
-    }, [data, onChange]);
+        if (!data.title) {
+            onChange('');
+            return;
+        }
+        onChange(qrPayloads.event(data));
+    };
+
+    // Auto-sync for text fields (immediate)
+    useEffect(() => {
+        syncToParent();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.title, data.location, data.description, onChange]);
+    // NOTE: We exclude data.start/end to prevent picker closing on selection. 
+    // Dates are synced onBlur.
 
     const update = (key: string, value: string) => setData(prev => ({ ...prev, [key]: value }));
 
@@ -72,6 +77,7 @@ export const EventForm = ({ onChange }: EventFormProps) => {
                             className="w-full bg-surface text-white border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-sans text-sm pr-10"
                             value={data.start}
                             onChange={e => update('start', e.target.value)}
+                            onBlur={syncToParent}
                         />
                         <button
                             onClick={() => startRef.current?.blur()}
@@ -91,6 +97,7 @@ export const EventForm = ({ onChange }: EventFormProps) => {
                             className={`w-full bg-surface text-white border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-sans text-sm pr-10 ${dateError ? 'border-red-500' : ''}`}
                             value={data.end}
                             onChange={e => update('end', e.target.value)}
+                            onBlur={syncToParent}
                         />
                         <button
                             onClick={() => endRef.current?.blur()}
