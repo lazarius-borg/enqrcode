@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Deep Blue Color Palette */
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-text-dim: #94a3b8;
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.3s ease-in-out;
+  --animate-slide-up: slideUp 0.4s ease-out;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Custom Glass Utilities */
+@utility glass {
+  @apply bg-slate-800/70 backdrop-blur-xl border border-white/10;
+}
+
+@utility glass-card {
+  @apply bg-surface/50 backdrop-blur-md border border-white/5 shadow-xl;
+}
+
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+
+  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Base styles */
+body {
+  @apply bg-bg text-white font-sans antialiased;
+}
