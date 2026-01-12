@@ -10,27 +10,42 @@ export const UrlForm = ({ onChange }: UrlFormProps) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!url) {
+        const trimmed = url.trim();
+        if (!trimmed) {
             onChange('');
             setError(null);
             return;
         }
 
-        // Basic URL validation
+        // Check for spaces (URLs shouldn't have spaces usually, though encodeURI handles them, for user input it's usually a mistake)
+        if (/\s/.test(trimmed)) {
+            setError('URL cannot contain spaces');
+            onChange('');
+            return;
+        }
+
         try {
-            // Try to construct URL to validate
-            // If it doesn't start with http/https, we might prepend it for the check or just warn
-            // But usually for QR code we want valid URI
-            let testUrl = url;
-            if (!/^https?:\/\//i.test(url) && !/^[a-z]+:/i.test(url)) {
-                // If no protocol, it might be valid domain but invalid URL object
-                testUrl = 'https://' + url;
+            let testUrl = trimmed;
+            // Add protocol if missing
+            if (!/^https?:\/\//i.test(trimmed) && !/^[a-z]+:/i.test(trimmed)) {
+                testUrl = 'https://' + trimmed;
             }
-            new URL(testUrl);
+
+            const urlObj = new URL(testUrl);
+            const hostname = urlObj.hostname;
+
+            // Strict check: Hostname must have a dot (TLD) unless it's localhost or an IP
+            // We optimize for common use case: "google" is invalid, "google.com" is valid
+            // IPs (1.1.1.1) have dots.
+            if (!hostname.includes('.') && hostname !== 'localhost') {
+                throw new Error('Missing TLD');
+            }
+
+            // If we got here, it's valid
             setError(null);
             onChange(testUrl);
         } catch (e) {
-            setError('Invalid URL format');
+            setError('Please enter a valid URL (e.g. example.com)');
             onChange('');
         }
 

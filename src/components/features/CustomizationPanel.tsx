@@ -16,6 +16,7 @@ export type CustomizationOptions = {
     errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
     width?: number; // Output resolution
     fileFormat?: 'png' | 'jpeg' | 'svg';
+    logo?: string;
 };
 
 type CustomizationPanelProps = {

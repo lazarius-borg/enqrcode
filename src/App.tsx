@@ -59,7 +59,8 @@ function App() {
     frame: options.frame,
     frameText: options.frameText,
     errorCorrectionLevel: options.errorCorrectionLevel,
-    fileFormat: options.fileFormat
+    fileFormat: options.fileFormat,
+    logo: options.logo
   });
 
   const handleDownloadClick = () => {

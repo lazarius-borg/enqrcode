@@ -13,6 +13,7 @@ export type QRStyleOptions = {
     frameText?: string;
     frameColor?: string;
     fileFormat?: 'png' | 'jpeg' | 'svg';
+    logo?: string; // Data URL
 };
 
 /* Unused helper removed */
@@ -22,8 +23,10 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
 
     try {
         // 1. Generate Raw QR Data
+        // If logo is present, force High error correction to ensure readability despite covered modules
+        const ecc = options?.logo ? 'H' : (options?.errorCorrectionLevel || 'M');
         const qr = await QRCode.create(text, {
-            errorCorrectionLevel: options?.errorCorrectionLevel || 'M'
+            errorCorrectionLevel: ecc
         });
 
         const modules = qr.modules;
@@ -155,6 +158,44 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                         ctx.fillRect(x, y, cellSize + 0.5, cellSize + 0.5);
                     }
                 }
+            }
+        }
+
+        // 5. Draw Logo
+        if (options?.logo) {
+            try {
+                const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+                    const image = new Image();
+                    image.crossOrigin = 'Anonymous';
+                    image.onload = () => resolve(image);
+                    image.onerror = () => reject(new Error('Failed to load logo'));
+                    image.src = options.logo!;
+                });
+
+                // Logo Size: 22% of the QR code area (safe for High ECC)
+                const logoSize = qrSize * 0.22;
+                const logoX = offsetX + (qrSize - logoSize) / 2;
+                const logoY = offsetY + (qrSize - logoSize) / 2;
+
+                // Draw background under logo to ensure it stands out and doesn't blend with modules
+                // Use a circular or rounded rect background depending on preference, rounded rect fits most logos
+                ctx.fillStyle = bgColor || '#ffffff';
+
+                // Add 10% padding
+                const pad = logoSize * 0.1;
+                const bgSize = logoSize + pad * 2;
+                const bgX = logoX - pad;
+                const bgY = logoY - pad;
+
+                ctx.beginPath();
+                ctx.roundRect(bgX, bgY, bgSize, bgSize, 10); // 10px rounding
+                ctx.fill();
+
+                // Draw Logo
+                ctx.drawImage(img, logoX, logoY, logoSize, logoSize);
+            } catch (e) {
+                console.warn('Failed to draw logo:', e);
+                // Continue without logo
             }
         }
 

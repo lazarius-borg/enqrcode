@@ -114,6 +114,57 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                 )}
             </div>
 
+            {/* Logo Section */}
+            <div className="space-y-3">
+                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Logo</h3>
+                <div className="flex gap-4 items-center">
+                    <div className="relative">
+                        <input
+                            type="file"
+                            id="logo-upload"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (evt) => {
+                                        update('logo', evt.target?.result as string);
+                                        update('errorCorrectionLevel', 'H'); // Force high ECC
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                        />
+                        <label
+                            htmlFor="logo-upload"
+                            className="flex flex-col items-center justify-center w-20 h-20 bg-surface border border-white/10 rounded-xl cursor-pointer hover:bg-surface-hover transition-colors overflow-hidden"
+                        >
+                            {options.logo ? (
+                                <img src={options.logo} alt="Logo" className="w-full h-full object-contain p-2" />
+                            ) : (
+                                <div className="flex flex-col items-center gap-1 text-slate-400">
+                                    <LayoutGrid size={20} />
+                                    <span className="text-[10px]">Upload</span>
+                                </div>
+                            )}
+                        </label>
+                    </div>
+
+                    {options.logo && (
+                        <button
+                            onClick={() => update('logo', undefined)}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 text-sm font-medium transition-colors"
+                        >
+                            Remove Logo
+                        </button>
+                    )}
+
+                    <div className="text-xs text-slate-500 max-w-[150px]">
+                        Upload a logo to place in the center (forces High error correction).
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
