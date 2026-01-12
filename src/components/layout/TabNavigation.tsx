@@ -16,21 +16,19 @@ export const TabNavigation = ({ activeTab, onChange }: TabNavigationProps) => {
     ] as const;
 
     return (
-        <div className="w-full border-b border-white/5 mb-6">
-            <div className="flex items-center gap-6 px-4 overflow-x-auto hide-scrollbar">
+        <div className="w-full mb-6 px-1">
+            <div className="flex bg-surface rounded-xl p-1 border border-white/10">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => onChange(tab.id as TabId)}
-                        className={`py-4 relative flex items-center gap-2 font-medium transition-colors ${activeTab === tab.id
-                            ? 'text-primary'
-                            : 'text-slate-400 hover:text-white'
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.id
+                            ? 'bg-primary text-white shadow-md'
+                            : 'text-slate-400 hover:text-white hover:bg-white/5'
                             }`}
                     >
-                        <span className="text-sm tracking-wide uppercase">{tab.label}</span>
-                        {activeTab === tab.id && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                        )}
+                        {/* <tab.icon size={16} /> Optional icon hiding for cleaner look if preferred, but keeping for now */}
+                        <span>{tab.label}</span>
                     </button>
                 ))}
             </div>
