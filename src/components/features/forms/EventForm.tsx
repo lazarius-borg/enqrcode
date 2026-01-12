@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '../../ui/Input';
 import { qrPayloads } from '../../../utils/qrPayloads';
+import { X } from 'lucide-react';
 
 type EventFormProps = {
     onChange: (value: string) => void;
@@ -22,7 +23,21 @@ export const EventForm = ({ onChange }: EventFormProps) => {
         description: ''
     });
 
+    const [dateError, setDateError] = useState<string | null>(null);
+    const startRef = useRef<HTMLInputElement>(null);
+    const endRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
+        // Validation
+        if (data.start && data.end) {
+            if (new Date(data.start) >= new Date(data.end)) {
+                setDateError('End time must be after start time');
+                onChange(''); // Prevent generation
+                return;
+            }
+        }
+        setDateError(null);
+
         if (!data.title) {
             onChange('');
             return;
@@ -31,6 +46,8 @@ export const EventForm = ({ onChange }: EventFormProps) => {
     }, [data, onChange]);
 
     const update = (key: string, value: string) => setData(prev => ({ ...prev, [key]: value }));
+
+
 
     return (
         <div className="space-y-4 animate-fade-in">
@@ -42,25 +59,46 @@ export const EventForm = ({ onChange }: EventFormProps) => {
             />
 
             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                     <label className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Starts</label>
-                    <input
-                        type="datetime-local"
-                        className="w-full bg-surface text-white border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-sans text-sm" // increased text size for better readability
-                        value={data.start}
-                        onChange={e => update('start', e.target.value)}
-                    />
+                    <div className="relative">
+                        <input
+                            ref={startRef}
+                            type="datetime-local"
+                            className="w-full bg-surface text-white border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-sans text-sm pr-10"
+                            value={data.start}
+                            onChange={e => update('start', e.target.value)}
+                        />
+                        <button
+                            onClick={() => startRef.current?.blur()}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                            title="Close Picker"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                     <label className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Ends</label>
-                    <input
-                        type="datetime-local"
-                        className="w-full bg-surface text-white border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-sans text-sm"
-                        value={data.end}
-                        onChange={e => update('end', e.target.value)}
-                    />
+                    <div className="relative">
+                        <input
+                            ref={endRef}
+                            type="datetime-local"
+                            className={`w-full bg-surface text-white border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-sans text-sm pr-10 ${dateError ? 'border-red-500' : ''}`}
+                            value={data.end}
+                            onChange={e => update('end', e.target.value)}
+                        />
+                        <button
+                            onClick={() => endRef.current?.blur()}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                            title="Close Picker"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
                 </div>
             </div>
+            {dateError && <p className="text-xs text-red-500 ml-1">{dateError}</p>}
 
             <Input
                 label="Location"

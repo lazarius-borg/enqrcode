@@ -13,11 +13,48 @@ export const VCardForm = ({ onChange }: VCardFormProps) => {
         street: '', city: '', zip: '', country: ''
     });
 
+    const [errors, setErrors] = useState<{ email?: string; website?: string }>({});
+
     useEffect(() => {
+        const newErrors: { email?: string; website?: string } = {};
+        let isValid = true;
+
+        // Email Validation
+        if (data.email) {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+                newErrors.email = 'Invalid email address';
+                isValid = false;
+            }
+        }
+
+        // Website Validation
+        if (data.website) {
+            try {
+                let url = data.website;
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                const urlObj = new URL(url);
+                if (!urlObj.hostname.includes('.')) {
+                    newErrors.website = 'Invalid URL';
+                    isValid = false;
+                }
+            } catch (e) {
+                newErrors.website = 'Invalid URL';
+                isValid = false;
+            }
+        }
+
+        setErrors(newErrors);
+
+        if (!isValid) {
+            onChange('');
+            return;
+        }
+
         if (!data.firstName && !data.lastName && !data.organization) {
             onChange('');
             return;
         }
+
         onChange(qrPayloads.vcard(data));
     }, [data, onChange]);
 
@@ -48,8 +85,22 @@ export const VCardForm = ({ onChange }: VCardFormProps) => {
                     <Input label="Mobile" placeholder="+1..." value={data.mobile} onChange={e => update('mobile', e.target.value)} />
                     <Input label="Phone" placeholder="+1..." value={data.phone} onChange={e => update('phone', e.target.value)} />
                 </div>
-                <Input label="Email" type="email" placeholder="john@acme.com" value={data.email} onChange={e => update('email', e.target.value)} />
-                <Input label="Website" type="url" placeholder="https://acme.com" value={data.website} onChange={e => update('website', e.target.value)} />
+                <Input
+                    label="Email"
+                    type="email"
+                    placeholder="john@acme.com"
+                    value={data.email}
+                    onChange={e => update('email', e.target.value)}
+                    error={errors.email}
+                />
+                <Input
+                    label="Website"
+                    type="url"
+                    placeholder="https://acme.com"
+                    value={data.website}
+                    onChange={e => update('website', e.target.value)}
+                    error={errors.website}
+                />
             </div>
 
             {/* Location */}
