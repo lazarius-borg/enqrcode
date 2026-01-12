@@ -12,25 +12,10 @@ export type QRStyleOptions = {
     frame?: 'none' | 'classic' | 'pill' | 'polaroid';
     frameText?: string;
     frameColor?: string;
+    fileFormat?: 'png' | 'jpeg' | 'svg';
 };
 
-// Helper: Draw a rounded rect
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-}
+/* Unused helper removed */
 
 export const generateQRCode = async (text: string, options?: QRStyleOptions): Promise<string> => {
     if (!text) return '';
@@ -173,7 +158,8 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
             }
         }
 
-        return canvas.toDataURL();
+        const format = options?.fileFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
+        return canvas.toDataURL(format, 1.0);
     } catch (err) {
         console.error('Failed to generate QR code', err);
         throw err;

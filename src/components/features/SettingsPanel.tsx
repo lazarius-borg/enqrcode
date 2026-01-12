@@ -90,6 +90,28 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
                 </div>
             </div>
 
+            {/* File Format */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                    <Zap size={16} className="text-primary" />
+                    <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider">File Format</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                    {['png', 'jpeg', 'svg'].map((fmt) => (
+                        <button
+                            key={fmt}
+                            onClick={() => update('fileFormat', fmt)}
+                            className={`py-3 rounded-xl border font-medium text-sm transition-all uppercase ${(options.fileFormat || 'png') === fmt
+                                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                                    : 'bg-surface border-white/10 text-slate-400 hover:text-white hover:bg-surface-hover'
+                                }`}
+                        >
+                            {fmt}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {/* App Info (Placeholder for Settings screen 7 completeness) */}
             <div className="pt-4 border-t border-white/5">
                 <button className="flex items-center gap-3 w-full p-4 rounded-xl cursor-default opacity-50">

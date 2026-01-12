@@ -12,19 +12,23 @@ import type { CustomizationOptions } from './components/features/CustomizationPa
 import { AdSpace } from './components/features/AdSpace';
 import './index.css';
 
+import { ExportDialog } from './components/features/ExportDialog';
+
 function App() {
   const [content, setContent] = useState<string>('');
   const [activeTab, setActiveTab] = useState<TabId>('content');
   const [showHistory, setShowHistory] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
 
   const [options, setOptions] = useState<CustomizationOptions>({
-    color: { dark: '#000000', light: '#ffffff00' },
+    color: { dark: '#000000', light: '#ffffff' },
     margin: 1,
     pattern: 'square',
     frame: 'none',
     frameText: 'SCAN ME',
     errorCorrectionLevel: 'M',
-    width: 1000
+    width: 1000,
+    fileFormat: 'png'
   });
 
   const [, setHistory] = useLocalStorage<any[]>('enqrcode-history', []);
@@ -54,17 +58,26 @@ function App() {
     pattern: options.pattern,
     frame: options.frame,
     frameText: options.frameText,
-    errorCorrectionLevel: options.errorCorrectionLevel
+    errorCorrectionLevel: options.errorCorrectionLevel,
+    fileFormat: options.fileFormat
   });
 
-  const handleDownload = () => {
+  const handleDownloadClick = () => {
+    if (!qrCodeData) return;
+    setShowExportDialog(true);
+  };
+
+  const handleExportConfirm = (filename: string) => {
     if (!qrCodeData) return;
     const link = document.createElement('a');
     link.href = qrCodeData;
-    link.download = `qrcode-${Date.now()}.png`;
+    const ext = options.fileFormat || 'png';
+    const finalName = filename.trim() || `qrcode-${Date.now()}`;
+    link.download = `${finalName}.${ext}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setShowExportDialog(false);
   };
 
   const handleShare = async () => {
@@ -105,7 +118,7 @@ function App() {
           <PreviewCard
             dataUrl={qrCodeData}
             loading={loading}
-            onDownload={handleDownload}
+            onDownload={handleDownloadClick}
             onShare={handleShare}
           />
 
@@ -133,6 +146,14 @@ function App() {
 
 
         </main>
+
+        <ExportDialog
+          isOpen={showExportDialog}
+          onClose={() => setShowExportDialog(false)}
+          onConfirm={handleExportConfirm}
+          defaultFilename={`qrcode-${Date.now()}`}
+          format={options.fileFormat || 'png'}
+        />
       </div>
     </div>
   );

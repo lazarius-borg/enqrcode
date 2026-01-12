@@ -15,6 +15,7 @@ export type CustomizationOptions = {
     frameColor?: string; // Optional override
     errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
     width?: number; // Output resolution
+    fileFormat?: 'png' | 'jpeg' | 'svg';
 };
 
 type CustomizationPanelProps = {
