@@ -28,21 +28,25 @@ export const EventForm = ({ onChange }: EventFormProps) => {
     const endRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        // Validation
-        if (data.start && data.end) {
-            if (new Date(data.start) >= new Date(data.end)) {
-                setDateError('End time must be after start time');
-                onChange(''); // Prevent generation
+        const timer = setTimeout(() => {
+            // Validation
+            if (data.start && data.end) {
+                if (new Date(data.start) >= new Date(data.end)) {
+                    setDateError('End time must be after start time');
+                    onChange(''); // Prevent generation
+                    return;
+                }
+            }
+            setDateError(null);
+
+            if (!data.title) {
+                onChange('');
                 return;
             }
-        }
-        setDateError(null);
+            onChange(qrPayloads.event(data));
+        }, 500);
 
-        if (!data.title) {
-            onChange('');
-            return;
-        }
-        onChange(qrPayloads.event(data));
+        return () => clearTimeout(timer);
     }, [data, onChange]);
 
     const update = (key: string, value: string) => setData(prev => ({ ...prev, [key]: value }));
