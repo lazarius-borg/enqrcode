@@ -51,7 +51,7 @@ function App() {
     return () => clearTimeout(timeoutId);
   }, [content, setHistory]);
 
-  const { qrCodeData, loading } = useQR(content, {
+  const { qrCodeData, loading, error } = useQR(content, {
     color: options.color,
     width: options.width || 1000,
     margin: options.margin,
@@ -62,6 +62,14 @@ function App() {
     fileFormat: options.fileFormat,
     logo: options.logo
   });
+
+  // Debug: Alert on QR generation errors (e.g. logo failure)
+  useEffect(() => {
+    if (error) {
+      console.error('QR Generation Error:', error);
+      alert(`Failed to generate QR Code: ${error.message}`);
+    }
+  }, [error]);
 
   const handleDownloadClick = () => {
     if (!qrCodeData) return;
@@ -86,15 +94,30 @@ function App() {
     try {
       const blob = await (await fetch(qrCodeData)).blob();
       const file = new File([blob], 'qrcode.png', { type: 'image/png' });
-      if (navigator.share) {
-        await navigator.share({
-          title: 'QR Code',
-          text: content,
-          files: [file],
-        });
+
+      if (!navigator.share) {
+        alert('Sharing is not supported on this browser (requires HTTPS).');
+        return;
       }
+
+      const shareData = {
+        title: 'QR Code',
+        text: content,
+        files: [file],
+      };
+
+      if (navigator.canShare && !navigator.canShare(shareData)) {
+        alert('Sharing this type of file is not supported.');
+        return;
+      }
+
+      await navigator.share(shareData);
     } catch (err) {
-      console.error(err);
+      // Ignore AbortError (user closed the share sheet)
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Error sharing:', err);
+        alert(`Error sharing: ${err.message}`);
+      }
     }
   };
 
@@ -131,9 +154,9 @@ function App() {
           <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
 
           <div className="min-h-[300px] animate-fade-in">
-            {activeTab === 'content' && (
+            <div className={activeTab === 'content' ? '' : 'hidden'}>
               <InputForms onChange={setContent} />
-            )}
+            </div>
 
             {activeTab === 'style' && (
               <StyleEditor options={options} onChange={setOptions} />

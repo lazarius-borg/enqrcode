@@ -33,7 +33,7 @@ export const VCardForm = ({ onChange }: VCardFormProps) => {
                 let url = data.website;
                 if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
                 const urlObj = new URL(url);
-                if (!urlObj.hostname.includes('.')) {
+                if (!/\.[a-z0-9]+$/i.test(urlObj.hostname)) {
                     newErrors.website = 'Invalid URL';
                     isValid = false;
                 }

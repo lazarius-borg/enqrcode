@@ -124,14 +124,79 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                             id="logo-upload"
                             accept="image/*"
                             className="hidden"
+                            onClick={(e) => {
+                                // Allow re-selecting the same file by resetting value
+                                (e.target as HTMLInputElement).value = '';
+                                console.log('StyleEditor: Input clicked, value reset');
+                            }}
                             onChange={(e) => {
+                                console.log('StyleEditor: File input changed');
                                 const file = e.target.files?.[0];
                                 if (file) {
+                                    console.log(`StyleEditor: File selected: ${file.name}, size: ${file.size} bytes`);
+
                                     const reader = new FileReader();
+
                                     reader.onload = (evt) => {
-                                        update('logo', evt.target?.result as string);
-                                        update('errorCorrectionLevel', 'H'); // Force high ECC
+                                        console.log('StyleEditor: FileReader loaded successfully');
+                                        const result = evt.target?.result as string;
+                                        if (!result) {
+                                            console.error('StyleEditor: FileReader result is empty');
+                                            return;
+                                        }
+
+                                        // Compress image to prevent UI freeze with large base64 strings
+                                        const img = new Image();
+                                        img.onload = () => {
+                                            const canvas = document.createElement('canvas');
+                                            const MAX_SIZE = 300; // Resize to max 300px for icon/logo usage
+                                            let width = img.width;
+                                            let height = img.height;
+
+                                            if (width > height) {
+                                                if (width > MAX_SIZE) {
+                                                    height *= MAX_SIZE / width;
+                                                    width = MAX_SIZE;
+                                                }
+                                            } else {
+                                                if (height > MAX_SIZE) {
+                                                    width *= MAX_SIZE / height;
+                                                    height = MAX_SIZE;
+                                                }
+                                            }
+
+                                            canvas.width = width;
+                                            canvas.height = height;
+                                            const ctx = canvas.getContext('2d');
+                                            ctx?.drawImage(img, 0, 0, width, height);
+
+                                            const compressedDataUrl = canvas.toDataURL('image/png');
+                                            console.log(`StyleEditor: Image compressed. New size: ${compressedDataUrl.length} chars (approx ${Math.round(compressedDataUrl.length * 0.75 / 1024)}KB)`);
+
+                                            onChange({
+                                                ...options,
+                                                logo: compressedDataUrl,
+                                                errorCorrectionLevel: 'H'
+                                            });
+                                        };
+                                        img.onerror = (err) => {
+                                            console.error('StyleEditor: Error loading image for compression', err);
+                                            // Fallback to original if compression fails
+                                            onChange({
+                                                ...options,
+                                                logo: result,
+                                                errorCorrectionLevel: 'H'
+                                            });
+                                        };
+                                        img.src = result;
                                     };
+
+                                    reader.onerror = (err) => {
+                                        console.error('StyleEditor: FileReader error', err);
+                                        alert('Failed to read file');
+                                    };
+
+                                    console.log('StyleEditor: Starting readAsDataURL...');
                                     reader.readAsDataURL(file);
                                 }
                             }}
@@ -153,8 +218,8 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
                     {options.logo && (
                         <button
-                            onClick={() => update('logo', undefined)}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 text-sm font-medium transition-colors"
+                            onClick={() => onChange({ ...options, logo: undefined })}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 text-xs font-medium transition-colors"
                         >
                             Remove Logo
                         </button>

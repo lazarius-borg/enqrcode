@@ -18,6 +18,17 @@ export type QRStyleOptions = {
 
 /* Unused helper removed */
 
+// Helper for cross-browser rounded rectangles (since roundRect is new)
+const drawRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+};
+
 export const generateQRCode = async (text: string, options?: QRStyleOptions): Promise<string> => {
     if (!text) return '';
 
@@ -108,14 +119,12 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
             } else if (frame === 'pill') {
                 ctx.fillStyle = options?.frameColor || fgColor;
                 // Draw pill shape background
-                ctx.beginPath();
-                ctx.roundRect(20, 20, totalSize - 40, totalSize - 40, 100);
+                drawRoundedRect(ctx, 20, 20, totalSize - 40, totalSize - 40, 100);
                 ctx.fill();
 
                 // White canvas for QR
                 ctx.fillStyle = '#ffffff';
-                ctx.beginPath();
-                ctx.roundRect(80, 80, qrSize + 40, qrSize + 40, 40);
+                drawRoundedRect(ctx, 80, 80, qrSize + 40, qrSize + 40, 40);
                 ctx.fill();
 
                 // Text
@@ -149,8 +158,7 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                     } else if (pattern === 'rounded') {
                         // Check neighbors for connecting flow (simplified: just rounded corners)
                         const rRadius = cellSize * 0.4;
-                        ctx.beginPath();
-                        ctx.roundRect(x, y, cellSize, cellSize, rRadius);
+                        drawRoundedRect(ctx, x, y, cellSize, cellSize, rRadius);
                         ctx.fill();
                     } else {
                         // Square (Default)
@@ -163,12 +171,19 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
 
         // 5. Draw Logo
         if (options?.logo) {
+            console.log('QR: Logo option present, attempting to load...');
             try {
                 const img = await new Promise<HTMLImageElement>((resolve, reject) => {
                     const image = new Image();
-                    image.crossOrigin = 'Anonymous';
-                    image.onload = () => resolve(image);
-                    image.onerror = () => reject(new Error('Failed to load logo'));
+                    // image.crossOrigin = 'Anonymous'; // Not strictly needed for data URLs and can cause issues
+                    image.onload = () => {
+                        console.log('QR: Logo image loaded successfully', image.width, 'x', image.height);
+                        resolve(image);
+                    };
+                    image.onerror = (e) => {
+                        console.error('QR: Logo image failed to load', e);
+                        reject(new Error('Failed to load logo image'));
+                    };
                     image.src = options.logo!;
                 });
 
@@ -187,12 +202,14 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                 const bgX = logoX - pad;
                 const bgY = logoY - pad;
 
-                ctx.beginPath();
-                ctx.roundRect(bgX, bgY, bgSize, bgSize, 10); // 10px rounding
+                console.log('QR: Drawing logo background...');
+                drawRoundedRect(ctx, bgX, bgY, bgSize, bgSize, 10); // 10px rounding
                 ctx.fill();
 
                 // Draw Logo
+                console.log('QR: Drawing logo image...');
                 ctx.drawImage(img, logoX, logoY, logoSize, logoSize);
+                console.log('QR: Logo drawing complete');
             } catch (e) {
                 console.warn('Failed to draw logo:', e);
                 // Continue without logo

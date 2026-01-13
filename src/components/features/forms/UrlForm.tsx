@@ -34,11 +34,13 @@ export const UrlForm = ({ onChange }: UrlFormProps) => {
             const urlObj = new URL(testUrl);
             const hostname = urlObj.hostname;
 
-            // Strict check: Hostname must have a dot (TLD) unless it's localhost or an IP
-            // We optimize for common use case: "google" is invalid, "google.com" is valid
-            // IPs (1.1.1.1) have dots.
-            if (!hostname.includes('.') && hostname !== 'localhost') {
-                throw new Error('Missing TLD');
+            // Strict check: Hostname must have a dot (TLD) unless it's localhost
+            // We optimize for common use case: "google" is invalid, "google.com" is valid.
+            // "test." is invalid (trailing dot with empty TLD).
+            // Regex checks for a dot followed by at least 2 alphanumeric chars for TLD (more realistic) or at least 1 as requested.
+            // Using /\.[a-z0-9]+$/i ensures there is content after the last dot.
+            if (hostname !== 'localhost' && !/\.[a-z0-9]+$/i.test(hostname)) {
+                throw new Error('Invalid TLD');
             }
 
             // If we got here, it's valid
