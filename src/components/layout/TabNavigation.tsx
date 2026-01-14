@@ -18,14 +18,14 @@ export const TabNavigation = ({ activeTab, onChange }: TabNavigationProps) => {
 
     return (
         <div className="w-full mb-6 px-1">
-            <div className="flex bg-surface rounded-xl p-1 border border-white/10">
+            <div className="flex bg-surface rounded-xl p-1 border border-border">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => onChange(tab.id as TabId)}
                         className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.id
                             ? 'bg-primary text-white shadow-md'
-                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            : 'text-text-dim hover:text-text-main hover:bg-surface-hover'
                             }`}
                     >
                         {/* <tab.icon size={16} /> Optional icon hiding for cleaner look if preferred, but keeping for now */}

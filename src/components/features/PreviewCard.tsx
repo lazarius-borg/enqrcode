@@ -35,7 +35,7 @@ export const PreviewCard = ({ dataUrl, loading, onDownload, onShare }: PreviewCa
             </div>
 
             <div className="flex gap-4">
-                <Button variant="glass" className="flex-1 bg-surface border-white/10 text-white hover:bg-slate-700/80 justify-center h-12 rounded-xl" onClick={onShare}>
+                <Button variant="glass" className="flex-1 bg-surface justify-center h-12 rounded-xl" onClick={onShare}>
                     <Share2 size={18} /> Share
                 </Button>
                 <Button variant="primary" className="flex-1 bg-primary hover:bg-primary-hover text-white justify-center h-12 rounded-xl border-none" onClick={onDownload}>

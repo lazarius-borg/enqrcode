@@ -20,8 +20,8 @@ export const Button = ({
 
     const variants = {
         primary: 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/25 border-none',
-        glass: 'glass hover:bg-slate-700/80 text-white',
-        ghost: 'hover:bg-white/5 text-slate-300 hover:text-white',
+        glass: 'glass hover:bg-surface-hover text-text-main',
+        ghost: 'hover:bg-white/5 text-text-dim hover:text-text-main',
     };
 
     const sizes = {

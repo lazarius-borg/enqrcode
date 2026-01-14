@@ -1,5 +1,6 @@
 import { Sliders, Shield, Zap } from 'lucide-react';
 import type { CustomizationOptions } from './CustomizationPanel';
+import { ThemeSelector } from './ThemeSelector';
 
 type SettingsPanelProps = {
     options: CustomizationOptions;
@@ -33,7 +34,7 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
 
                 <div className="bg-surface border border-white/10 rounded-2xl p-4">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-medium text-white">Export Quality</span>
+                        <span className="text-sm font-medium text-text-main">Export Quality</span>
                         <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">{options.width || 1000}px</span>
                     </div>
 
@@ -102,8 +103,8 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
                             key={fmt}
                             onClick={() => update('fileFormat', fmt)}
                             className={`py-3 rounded-xl border font-medium text-sm transition-all uppercase ${(options.fileFormat || 'png') === fmt
-                                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
-                                    : 'bg-surface border-white/10 text-slate-400 hover:text-white hover:bg-surface-hover'
+                                ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                                : 'bg-surface border-white/10 text-slate-400 hover:text-text-main hover:bg-surface-hover'
                                 }`}
                         >
                             {fmt}
@@ -112,13 +113,8 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
                 </div>
             </div>
 
-            {/* App Info (Placeholder for Settings screen 7 completeness) */}
-            <div className="pt-4 border-t border-white/5">
-                <button className="flex items-center gap-3 w-full p-4 rounded-xl cursor-default opacity-50">
-                    <Zap size={16} className="text-yellow-500" />
-                    <span className="text-sm text-slate-400">Pro Features (Coming Soon)</span>
-                </button>
-            </div>
+            {/* Theme Selector */}
+            <ThemeSelector />
 
         </div>
     );

@@ -15,8 +15,8 @@ export const Input = ({ label, error, className = '', ...props }: InputProps) =>
             )}
             <input
                 className={`
-          w-full bg-surface text-white 
-          border border-white/10 
+          w-full bg-surface text-text-main 
+          border border-border 
           rounded-xl px-4 py-3
           placeholder:text-slate-600
           outline-none
