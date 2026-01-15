@@ -6,6 +6,8 @@ import { InputForms } from './components/features/InputForms';
 import { StyleEditor } from './components/features/StyleEditor';
 import { SettingsPanel } from './components/features/SettingsPanel';
 import { HistoryPanel } from './components/features/HistoryPanel';
+import { Sidebar } from './components/layout/Sidebar';
+import { HistoryView } from './components/features/HistoryView';
 import { useQR } from './hooks/useQR';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { CustomizationOptions } from './components/features/CustomizationPanel'; // Type
@@ -45,7 +47,7 @@ function App() {
           type: 'QR', // Generic for now
           timestamp: Date.now()
         };
-        return [newItem, ...prev].slice(0, 50);
+        return [newItem, ...prev].slice(50);
       });
     }, 1500);
     return () => clearTimeout(timeoutId);
@@ -65,7 +67,7 @@ function App() {
     logo: options.logo
   });
 
-  // Debug: Alert on QR generation errors (e.g. logo failure)
+  // Debug: Alert on QR generation errors
   useEffect(() => {
     if (error) {
       console.error('QR Generation Error:', error);
@@ -115,7 +117,6 @@ function App() {
 
       await navigator.share(shareData);
     } catch (err) {
-      // Ignore AbortError (user closed the share sheet)
       if (err instanceof Error && err.name !== 'AbortError') {
         console.error('Error sharing:', err);
         alert(`Error sharing: ${err.message}`);
@@ -123,42 +124,85 @@ function App() {
     }
   };
 
+  // Helper to sync Active Tab changes from Sidebar
+  const handleTabChange = (id: TabId) => {
+    setActiveTab(id);
+  };
+
   return (
-    <div className="min-h-screen bg-black lg:bg-slate-900 flex items-center justify-center p-0 lg:p-8">
-      {/* Desktop Phone Frame Wrapper */}
-      <div className="w-full h-full lg:w-[400px] lg:h-[850px] bg-bg lg:rounded-[3rem] lg:border-8 lg:border-slate-800 lg:shadow-2xl overflow-hidden relative flex flex-col">
+    <div className="min-h-screen bg-bg text-text-main font-sans antialiased overflow-hidden flex flex-col lg:grid lg:grid-cols-[260px_1fr_420px] lg:grid-rows-[1fr]">
 
-        {/* Dynamic Island / Notch Placeholder for Desktop Look */}
-        <div className="hidden lg:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-black rounded-b-2xl z-50"></div>
+      {/* DESKTOP SIDEBAR */}
+      <Sidebar
+        activeTab={activeTab}
+        onChange={handleTabChange}
+        className="hidden lg:flex row-span-full z-20"
+      />
 
+      {/* MOBILE HEADER - Sticky */}
+      <div className="lg:hidden sticky top-0 z-50">
         <MobileHeader onHistoryClick={() => setShowHistory(true)} />
+      </div>
 
-        <HistoryPanel
-          isOpen={showHistory}
-          onClose={() => setShowHistory(false)}
-          onSelect={(val) => { setContent(val); setShowHistory(false); }}
-        />
+      <HistoryPanel
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        onSelect={(val) => { setContent(val); setShowHistory(false); }}
+      />
 
-        <main className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-6 pb-20">
+      {/* 
+          MAIN CONTENT AREA 
+          Mobile: Single column flow (Preview -> Ads -> Controls).
+          Desktop: Dissected into Grid Columns.
+      */}
 
+      {/* RE-THINKING STRUCTURE FOR PRESERVATION
+          The easiest way to preserve mobile EXACTLY while having a Grid on Desktop 
+          is to allow two different root structures conditionally, OR
+          use `contents` CSS.
+          
+          Let's use the `contents` approach for the wrapper.
+      */}
+
+      <main className="flex-1 overflow-y-auto hide-scrollbar lg:contents">
+
+        {/* PREVIEW CONTAINER */}
+        {/* Mobile: Block in flow. Desktop: Col 2, Fixed/Flex Center. */}
+        <div className="p-4 lg:p-0 lg:col-start-2 lg:row-start-1 lg:row-span-full lg:h-full lg:flex lg:flex-col-reverse lg:gap-8 lg:items-center lg:justify-end lg:pt-6 lg:bg-bg/50 relative">
           <PreviewCard
             dataUrl={qrCodeData}
             loading={loading}
             onDownload={handleDownloadClick}
             onShare={handleShare}
+            className="lg:max-w-[400px] lg:shadow-2xl lg:mb-0"
           />
 
-          {/* Advertisement Space */}
-          <div className="mb-6 mt-2">
+          {/* Desktop Background Decoration (Optional) */}
+          <div className="hidden lg:block absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 to-transparent opacity-50"></div>
+
+          {/* Ad Space - Mobile: Below Preview. Desktop: Above Preview (via flex-col-reverse) */}
+          <div className="w-full max-w-[320px] lg:max-w-[400px]">
             <AdSpace className="rounded-2xl" />
           </div>
+        </div>
 
-          <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+        {/* CONTROLS CONTAINER */}
+        {/* Mobile: Block in flow. Desktop: Col 3, Scrollable Sidebar. */}
+        <div className="lg:col-start-3 lg:row-start-1 lg:row-span-full lg:h-full lg:overflow-y-auto lg:bg-surface lg:border-l lg:border-border lg:flex lg:flex-col">
 
-          <div className="min-h-[300px] animate-fade-in">
-            <div className={activeTab === 'content' ? '' : 'hidden'}>
+          {/* Ad Space - Moved to Preview Col */}
+
+          {/* Mobile Tabs */}
+          <div className="lg:hidden px-4">
+            <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+          </div>
+
+          {/* Content Panels */}
+          <div className="px-4 pb-20 lg:py-6 lg:px-6 lg:flex-1 animate-fade-in">
+
+            {activeTab === 'content' && (
               <InputForms onChange={setContent} />
-            </div>
+            )}
 
             {activeTab === 'style' && (
               <StyleEditor options={options} onChange={setOptions} />
@@ -167,20 +211,29 @@ function App() {
             {activeTab === 'settings' && (
               <SettingsPanel options={options} onChange={setOptions} />
             )}
+
+            {/* Desktop History View */}
+            {activeTab === 'history' && (
+              <div className="hidden lg:block h-full">
+                <HistoryView onSelect={(val) => { setContent(val); }} />
+              </div>
+            )}
+
+            {/* Fallback for formatting if history selected on mobile (shouldn't happen via tabs but valid state) 
+                    On Mobile, 'history' is not a tab. If activeTab is 'history', mobile view might show nothing.
+                    We should ensure Mobile tabs don't allowing selecting 'history'.
+                */}
           </div>
+        </div>
+      </main>
 
-
-
-        </main>
-
-        <ExportDialog
-          isOpen={showExportDialog}
-          onClose={() => setShowExportDialog(false)}
-          onConfirm={handleExportConfirm}
-          defaultFilename={`qrcode-${Date.now()}`}
-          format={options.fileFormat || 'png'}
-        />
-      </div>
+      <ExportDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        onConfirm={handleExportConfirm}
+        defaultFilename={`qrcode-${Date.now()}`}
+        format={options.fileFormat || 'png'}
+      />
     </div>
   );
 }

@@ -40,7 +40,7 @@ export const InputForms = ({ onChange }: InputFormsProps) => {
     return (
         <div className="w-full">
             {/* Type Switcher Pills */}
-            <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-6 p-1">
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar lg:grid lg:grid-cols-3 lg:gap-3 lg:overflow-visible mb-6 p-1">
                 {types.map((t) => (
                     <button
                         key={t.id}

@@ -1,6 +1,6 @@
 import { FileText, Palette, Settings } from 'lucide-react';
 
-export type TabId = 'content' | 'style' | 'history' | 'settings';
+export type TabId = 'content' | 'style' | 'settings' | 'history';
 
 type TabNavigationProps = {
     activeTab: TabId;

@@ -8,9 +8,9 @@ type PreviewCardProps = {
     onShare: () => void;
 };
 
-export const PreviewCard = ({ dataUrl, loading, onDownload, onShare }: PreviewCardProps) => {
+export const PreviewCard = ({ dataUrl, loading, onDownload, onShare, className = '' }: PreviewCardProps & { className?: string }) => {
     return (
-        <div className="w-full max-w-[320px] mx-auto mb-8">
+        <div className={`w-full max-w-[320px] mx-auto mb-8 ${className}`}>
             {/* White Container Card matching mockups */}
             <div className="bg-white rounded-3xl p-6 shadow-2xl aspect-square flex items-center justify-center relative overflow-hidden mb-6">
                 {loading && (

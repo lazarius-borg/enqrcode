@@ -5,7 +5,7 @@ type MobileHeaderProps = {
     onHistoryClick: () => void;
 };
 
-export const MobileHeader = ({ title = 'QR Creator', onHistoryClick }: MobileHeaderProps) => {
+export const MobileHeader = ({ title = 'QR Code Generator', onHistoryClick }: MobileHeaderProps) => {
     return (
         <header className="flex items-center justify-between p-4 bg-bg/95 border-b border-white/5 sticky top-0 z-50 backdrop-blur-md">
             {/* Placeholder for left-side action (e.g. Menu) if needed, currently empty to balance layout */}
