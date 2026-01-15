@@ -54,7 +54,7 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
         const eyeFrame = options?.eyeFrame || 'square';
         const eyeBall = options?.eyeBall || 'square';
         const frame = options?.frame || 'none';
-        const frameText = options?.frameText || 'SCAN ME';
+        const frameText = options?.frameText ?? 'SCAN ME';
 
         // 2. Setup Canvas
         const canvas = document.createElement('canvas');
@@ -100,7 +100,7 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
             if (frame === 'classic') {
                 ctx.strokeStyle = options?.frameColor || fgColor;
                 ctx.lineWidth = 20;
-                ctx.fillStyle = '#ffffff'; // Content bg
+                ctx.fillStyle = bgColor; // Content bg
                 // Outer BG
                 ctx.fillRect(0, 0, totalSize, totalSize);
                 // Border
@@ -113,7 +113,7 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                 ctx.fillText(frameText.toUpperCase(), totalSize / 2, totalSize - 60);
 
             } else if (frame === 'polaroid') {
-                ctx.fillStyle = '#ffffff';
+                ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, totalSize, totalSize);
                 ctx.fillStyle = '#000000';
                 ctx.font = 'italic 60px serif';
@@ -127,7 +127,7 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                 ctx.fill();
 
                 // White canvas for QR
-                ctx.fillStyle = '#ffffff';
+                ctx.fillStyle = bgColor;
                 drawRoundedRect(ctx, 80, 80, qrSize + 40, qrSize + 40, 40);
                 ctx.fill();
 
@@ -250,10 +250,10 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                 ctx.fillStyle = fgColor;
                 if (eyeFrame === 'rounded') {
                     drawRoundedRect(ctx, x, y, size, size, 2 * cellSize);
+                    ctx.fill();
                 } else {
                     ctx.fillRect(x, y, size, size);
                 }
-                ctx.fill();
 
                 // Clear inner 5x5
                 // Use destination-out to be transparent? No, we want bg color.

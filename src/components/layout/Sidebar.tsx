@@ -10,7 +10,7 @@ type SidebarProps = {
 export const Sidebar = ({ activeTab, onChange, className = '' }: SidebarProps) => {
     const navItems = [
         { id: 'content', icon: FileText, label: 'Content' },
-        { id: 'style', icon: Palette, label: 'Design' },
+        { id: 'style', icon: Palette, label: 'Style' },
         { id: 'history', icon: History, label: 'History' },
         { id: 'settings', icon: Settings, label: 'Settings' },
     ] as const;

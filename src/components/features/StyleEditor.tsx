@@ -43,8 +43,8 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
     const patterns = [
         { id: 'square', label: 'Square', icon: Square },
+        { id: 'rounded', label: 'Rounded', icon: RoundedSquare },
         { id: 'dot', label: 'Dots', icon: Circle },
-        { id: 'rounded', label: 'Rounded', icon: LayoutGrid },
     ];
 
     const eyeShapes = [
