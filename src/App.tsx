@@ -56,6 +56,8 @@ function App() {
     width: options.width || 1000,
     margin: options.margin,
     pattern: options.pattern,
+    eyeFrame: options.eyeFrame,
+    eyeBall: options.eyeBall,
     frame: options.frame,
     frameText: options.frameText,
     errorCorrectionLevel: options.errorCorrectionLevel,

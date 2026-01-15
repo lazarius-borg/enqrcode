@@ -10,6 +10,8 @@ export type CustomizationOptions = {
     margin: number;
     // New fields
     pattern: 'square' | 'dot' | 'rounded';
+    eyeFrame?: 'square' | 'rounded' | 'circle'; // New
+    eyeBall?: 'square' | 'rounded' | 'circle'; // New
     frame: 'none' | 'classic' | 'pill' | 'polaroid';
     frameText: string;
     frameColor?: string; // Optional override

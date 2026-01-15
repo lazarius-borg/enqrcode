@@ -2,6 +2,23 @@ import { Ban, Square, Circle, LayoutGrid } from 'lucide-react';
 import type { CustomizationOptions } from './CustomizationPanel';
 import { Input } from '../ui/Input';
 
+const RoundedSquare = ({ size, className }: { size?: number | string; className?: string }) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <rect width="18" height="18" x="3" y="3" rx="5" ry="5" />
+    </svg>
+);
+
 type StyleEditorProps = {
     options: CustomizationOptions;
     onChange: (options: CustomizationOptions) => void;
@@ -30,6 +47,12 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
         { id: 'rounded', label: 'Rounded', icon: LayoutGrid },
     ];
 
+    const eyeShapes = [
+        { id: 'square', label: 'Square', icon: Square },
+        { id: 'rounded', label: 'Rounded', icon: RoundedSquare },
+        { id: 'circle', label: 'Circle', icon: Circle },
+    ];
+
     return (
         <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
@@ -54,6 +77,54 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                             onChange={(e) => handleColorChange('light', e.target.value)}
                             className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 p-0 cursor-pointer"
                         />
+                    </div>
+                </div>
+            </div>
+
+            {/* Eyes Section */}
+            <div className="space-y-4">
+                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Eyes</h3>
+
+                {/* Frame */}
+                <div className="space-y-2">
+                    <span className="text-[10px] uppercase text-slate-500 ml-1">Properties</span>
+                    <div className="flex gap-3">
+                        <div className="flex-1 space-y-2">
+                            <label className="text-[10px] text-slate-400 block text-center">Frame</label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {eyeShapes.map((s) => (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => update('eyeFrame', s.id)}
+                                        className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all ${options.eyeFrame === s.id || (!options.eyeFrame && s.id === 'square')
+                                            ? 'bg-primary border-primary text-white'
+                                            : 'bg-surface border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                            }`}
+                                        title={s.label}
+                                    >
+                                        <s.icon size={16} />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex-1 space-y-2">
+                            <label className="text-[10px] text-slate-400 block text-center">Ball</label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {eyeShapes.map((s) => (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => update('eyeBall', s.id)}
+                                        className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all ${options.eyeBall === s.id || (!options.eyeBall && s.id === 'square')
+                                            ? 'bg-primary border-primary text-white'
+                                            : 'bg-surface border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                            }`}
+                                        title={s.label}
+                                    >
+                                        <s.icon size={16} />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -9,6 +9,8 @@ export type QRStyleOptions = {
     margin?: number;
     errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
     pattern?: 'square' | 'dot' | 'rounded';
+    eyeFrame?: 'square' | 'rounded' | 'circle';
+    eyeBall?: 'square' | 'rounded' | 'circle';
     frame?: 'none' | 'classic' | 'pill' | 'polaroid';
     frameText?: string;
     frameColor?: string;
@@ -49,6 +51,8 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
         const fgColor = options?.color.dark || '#000000';
         const bgColor = options?.color.light || '#ffffff'; // We need a real bg for frames
         const pattern = options?.pattern || 'square';
+        const eyeFrame = options?.eyeFrame || 'square';
+        const eyeBall = options?.eyeBall || 'square';
         const frame = options?.frame || 'none';
         const frameText = options?.frameText || 'SCAN ME';
 
@@ -144,10 +148,22 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
 
         ctx.fillStyle = fgColor;
 
+        // Helper to check if a module is part of the 3 finder patterns (Eyes)
+        // Finder patterns are 7x7 squares at TL, TR, BL
+        const isFinderPattern = (c: number, r: number) => {
+            if (r < 7 && c < 7) return true; // Top-Left
+            if (r < 7 && c >= moduleCount - 7) return true; // Top-Right
+            if (r >= moduleCount - 7 && c < 7) return true; // Bottom-Left
+            return false;
+        };
+
         for (let r = 0; r < moduleCount; r++) {
             for (let c = 0; c < moduleCount; c++) {
                 // @ts-ignore - The types for node-qrcode are sometimes inconsistent with internal structure
                 if (modules.get(c, r)) {
+                    // Skip if part of finder pattern (we draw them separately)
+                    if (isFinderPattern(c, r)) continue;
+
                     const x = finalOffsetX + c * cellSize;
                     const y = finalOffsetY + r * cellSize;
 
@@ -156,20 +172,161 @@ export const generateQRCode = async (text: string, options?: QRStyleOptions): Pr
                         ctx.arc(x + cellSize / 2, y + cellSize / 2, cellSize / 2, 0, Math.PI * 2);
                         ctx.fill();
                     } else if (pattern === 'rounded') {
-                        // Check neighbors for connecting flow (simplified: just rounded corners)
                         const rRadius = cellSize * 0.4;
                         drawRoundedRect(ctx, x, y, cellSize, cellSize, rRadius);
                         ctx.fill();
                     } else {
-                        // Square (Default)
-                        // Slight overlap to avoid anti-aliasing gaps
+                        // Square (Default)- Slight overlap to avoid anti-aliasing gaps
                         ctx.fillRect(x, y, cellSize + 0.5, cellSize + 0.5);
                     }
                 }
             }
         }
 
-        // 5. Draw Logo
+        // 5. Draw Custom Eyes (Finder Patterns)
+        const drawEye = (r: number, c: number) => {
+            const x = finalOffsetX + c * cellSize;
+            const y = finalOffsetY + r * cellSize;
+            const size = 7 * cellSize;
+
+            // -- Eye Frame --
+            // By default (square), it covers the 7x7 area but has a hole in the middle (5x5 white, then 3x3 black)
+            // But manually drawing it is easier: Draw 7x7 outer, clear 5x5 inner.
+
+            // Adjust to draw the specific shape
+            ctx.fillStyle = fgColor;
+
+            if (eyeFrame === 'circle') {
+                ctx.beginPath();
+                // Outer circle
+                const cx = x + size / 2;
+                const cy = y + size / 2;
+                const radius = size / 2;
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+
+                // Cut out inner hole (counter-clockwise) to make a ring
+                // The frame is 1 module thick. 7 modules wide.
+                // Inner empty area is 5 modules wide. Radius = 2.5 * cellSize
+                const innerRadius = (5 * cellSize) / 2;
+                ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2, true);
+                ctx.fill();
+            } else if (eyeFrame === 'rounded') {
+                // Outer 7x7 rounded rect
+                const rOuter = 2 * cellSize; // fairly rounded
+
+                // We need to use "evenodd" fill rule or path direction to create a hole
+                // easier to just fill outer, clear inner, then fill inner ball later
+                // But we don't want to clear the background if we have a frame bg
+
+                // Path approach
+                ctx.beginPath();
+                // Outer (clockwise)
+                ctx.moveTo(x + rOuter, y);
+                ctx.arcTo(x + size, y, x + size, y + size, rOuter);
+                ctx.arcTo(x + size, y + size, x, y + size, rOuter);
+                ctx.arcTo(x, y + size, x, y, rOuter);
+                ctx.arcTo(x, y, x + rOuter, y, rOuter);
+
+                // Inner (counter-clockwise) 5x5 hole
+                const innerSize = 5 * cellSize;
+                const ix = x + cellSize;
+                const iy = y + cellSize;
+                const rInner = 1.2 * cellSize;
+
+                ctx.moveTo(ix + rInner, iy);
+                ctx.lineTo(ix + innerSize - rInner, iy);
+                // Manual path for hole is complex with arcTo key points, let's use rect for simpliciy or composite operations
+                // Actually, let's just do:
+                // Draw Outer
+                // GlobalCompositeOperation 'destination-out' to clear center
+                // Draw Inner Ball
+                // Restore Composite
+                // BUT: background might be complex. 
+                // Simpler: Draw Outer Solid, Draw Inner White Solid (bg color), Draw Ball Solid.
+            }
+
+            // Simplified approach for all shapes that aren't paths
+            if (eyeFrame === 'square' || eyeFrame === 'rounded') {
+                ctx.fillStyle = fgColor;
+                if (eyeFrame === 'rounded') {
+                    drawRoundedRect(ctx, x, y, size, size, 2 * cellSize);
+                } else {
+                    ctx.fillRect(x, y, size, size);
+                }
+                ctx.fill();
+
+                // Clear inner 5x5
+                // Use destination-out to be transparent? No, we want bg color.
+                // If transparent bg, we need destination-out. If white bg, white.
+                // Since we support transparent PNGs effectively, we should probably stick to fgColor logic.
+                // But wait, the previous code skipped drawing these modules. So the area is currently empty/background.
+
+                // If we draw a solid 7x7, we cover the background.
+                // Correct way: Draw 7x7 FG. Draw 5x5 BG. Draw 3x3 FG.
+
+                // 1. Frame Outer
+                ctx.fillStyle = fgColor;
+                if (eyeFrame === 'rounded') {
+                    drawRoundedRect(ctx, x, y, size, size, 2.5 * cellSize);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(x, y, size, size);
+                }
+
+                // 2. Frame Inner (Hole) - 5x5
+                // If bgColor is transparent/undefined, we might have an issue. 
+                // Assuming white or provided bg.
+                // If we want transparency, we need 'globalCompositeOperation = destination-out'
+                if (!bgColor || bgColor === 'transparent') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                } else {
+                    ctx.fillStyle = bgColor;
+                }
+
+                const holeSize = 5 * cellSize;
+                const holeX = x + cellSize;
+                const holeY = y + cellSize;
+
+                if (eyeFrame === 'rounded') {
+                    // Inner radius slightly smaller to look parallel
+                    drawRoundedRect(ctx, holeX, holeY, holeSize, holeSize, 1.5 * cellSize);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(holeX, holeY, holeSize, holeSize);
+                }
+
+                // Reset composite
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            // -- Eye Ball --
+            // 3x3 center
+            const ballSize = 3 * cellSize;
+            const ballX = x + 2 * cellSize;
+            const ballY = y + 2 * cellSize;
+
+            ctx.fillStyle = fgColor; // Back to FG
+
+            if (eyeBall === 'circle') {
+                ctx.beginPath();
+                ctx.arc(ballX + ballSize / 2, ballY + ballSize / 2, ballSize / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (eyeBall === 'rounded') {
+                ctx.beginPath();
+                drawRoundedRect(ctx, ballX, ballY, ballSize, ballSize, 1 * cellSize);
+                ctx.fill();
+            } else {
+                // Square
+                ctx.fillRect(ballX, ballY, ballSize, ballSize);
+            }
+        };
+
+        // Draw the 3 finders
+        drawEye(0, 0); // TL
+        drawEye(0, moduleCount - 7); // TR
+        drawEye(moduleCount - 7, 0); // BL
+
+        // 6. Draw Logo
         if (options?.logo) {
             console.log('QR: Logo option present, attempting to load...');
             try {
