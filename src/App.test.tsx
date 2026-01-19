@@ -2,9 +2,15 @@ import { render, screen } from '@testing-library/react';
 import App from './App';
 import { describe, it, expect } from 'vitest';
 
+import { PWAInstallProvider } from './context/PWAInstallContext';
+
 describe('App', () => {
     it('renders without crashing and shows title', () => {
-        render(<App />);
+        render(
+            <PWAInstallProvider>
+                <App />
+            </PWAInstallProvider>
+        );
         // Check for "QR Code Generator" text which likely appears in the header or sidebar title
         // Based on previous conversations, there is a title "QR Code Generator"
         // We can look for it using getByText with a regex to be case insensitive
@@ -13,7 +19,11 @@ describe('App', () => {
     });
 
     it('renders tab navigation on desktop', () => {
-        render(<App />);
+        render(
+            <PWAInstallProvider>
+                <App />
+            </PWAInstallProvider>
+        );
         // Verify tabs exist. Based on TabNavigation.tsx names might be Content, Style, Settings etc.
         expect(screen.getAllByText(/Content/i).length).toBeGreaterThan(0);
 

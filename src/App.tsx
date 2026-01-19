@@ -181,8 +181,10 @@ function App() {
           <div className="hidden lg:block absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 to-transparent opacity-50"></div>
 
           {/* Ad Space - Mobile: Below Preview. Desktop: Above Preview (via flex-col-reverse) */}
-          <div className="w-full max-w-[320px] lg:max-w-[400px]">
-            <AdSpace className="rounded-2xl" />
+          <div className="flex justify-center w-full">
+            <div className="w-full max-w-[320px] lg:max-w-[400px]">
+              <AdSpace className="rounded-2xl" />
+            </div>
           </div>
         </div>
 
