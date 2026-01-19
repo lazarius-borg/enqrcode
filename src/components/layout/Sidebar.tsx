@@ -1,4 +1,5 @@
 import { FileText, Palette, Settings, History } from 'lucide-react';
+import { InstallButton } from '../common/InstallButton';
 import type { TabId } from './TabNavigation';
 
 type SidebarProps = {
@@ -42,6 +43,11 @@ export const Sidebar = ({ activeTab, onChange, className = '' }: SidebarProps) =
                     </button>
                 ))}
             </nav>
+
+            {/* Install App Button */}
+            <div className="px-3 pb-4">
+                <InstallButton />
+            </div>
         </aside>
     );
 };

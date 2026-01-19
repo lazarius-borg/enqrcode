@@ -1,4 +1,5 @@
 import { History } from 'lucide-react';
+import { InstallButton } from '../common/InstallButton';
 
 type MobileHeaderProps = {
     title?: string;
@@ -9,7 +10,9 @@ export const MobileHeader = ({ title = 'QR Code Generator', onHistoryClick }: Mo
     return (
         <header className="flex items-center justify-between p-4 bg-bg/95 border-b border-white/5 sticky top-0 z-50 backdrop-blur-md">
             {/* Placeholder for left-side action (e.g. Menu) if needed, currently empty to balance layout */}
-            <div className="w-10"></div>
+            <div className="w-10">
+                <InstallButton isMobile={true} />
+            </div>
 
             <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
 
