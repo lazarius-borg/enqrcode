@@ -12,7 +12,14 @@ export const UrlForm = ({ onChange, initialValue }: UrlFormProps) => {
 
     // Update state if initialValue changes (e.g. late binding)
     useEffect(() => {
-        if (initialValue) setUrl(initialValue);
+        if (initialValue) {
+            setUrl(initialValue);
+            // We need to trigger validity check perhaps, or just trust it? 
+            // Better to let the detailed effect below validation handle the onChange if possible, 
+            // OR just set URL and let the existing dependency array [url] trigger the validation effect.
+            // If I setUrl here, the NEXT render will run the validation effect because `url` changed.
+            // So effectively, I don't need to call onChange HERE if the other useEffect depends on `url`.
+        }
     }, [initialValue]);
 
     useEffect(() => {

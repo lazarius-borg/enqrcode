@@ -10,7 +10,21 @@ export const TextForm = ({ onChange, initialValue }: TextFormProps) => {
     const MAX_CHARS = 2000;
 
     // Sync initialValue
-    useEffect(() => { if (initialValue) setText(initialValue); }, [initialValue]);
+    useEffect(() => {
+        if (initialValue) {
+            setText(initialValue);
+            // Trigger parent update immediately so preview is generated
+            // Use setTimeout to avoid race conditions during mounting/switching
+            const t = setTimeout(() => {
+                if (initialValue.length <= MAX_CHARS) {
+                    onChange(initialValue);
+                } else {
+                    onChange('');
+                }
+            }, 0);
+            return () => clearTimeout(t);
+        }
+    }, [initialValue, onChange]);
 
     const handleChange = (val: string) => {
         setText(val);
