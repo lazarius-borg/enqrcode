@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Link, Type, Wifi, Contact, Mail, Phone, MessageSquare, Calendar, MessagesSquare
 } from 'lucide-react';
@@ -11,16 +11,25 @@ import { WifiForm } from './forms/WifiForm';
 import { VCardForm } from './forms/VCardForm';
 import { EventForm } from './forms/EventForm';
 
-type InputType = 'url' | 'text' | 'email' | 'phone' | 'sms' | 'whatsapp' | 'wifi' | 'vcard' | 'event';
+import type { ShareType } from '../../utils/shareParsers';
 
 type InputFormsProps = {
     onChange: (value: string) => void;
+    initialType?: ShareType;
+    initialContent?: any;
 };
 
-export const InputForms = ({ onChange }: InputFormsProps) => {
-    const [activeType, setActiveType] = useState<InputType>('url');
+export const InputForms = ({ onChange, initialType, initialContent }: InputFormsProps) => {
+    const [activeType, setActiveType] = useState<ShareType | 'sms' | 'whatsapp'>('url');
 
-    const handleTypeChange = (type: InputType) => {
+    // Sync active type when initialType provided (e.g. from Share Target)
+    useEffect(() => {
+        if (initialType) {
+            setActiveType(initialType);
+        }
+    }, [initialType]);
+
+    const handleTypeChange = (type: ShareType | 'sms' | 'whatsapp') => {
         setActiveType(type);
         onChange(''); // Clear content on switch
     };
@@ -44,7 +53,7 @@ export const InputForms = ({ onChange }: InputFormsProps) => {
                 {types.map((t) => (
                     <button
                         key={t.id}
-                        onClick={() => handleTypeChange(t.id as InputType)}
+                        onClick={() => handleTypeChange(t.id as ShareType | 'sms' | 'whatsapp')}
                         className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all whitespace-nowrap ${activeType === t.id
                             ? 'bg-primary border-primary text-white font-medium shadow-lg shadow-primary/25'
                             : 'bg-surface border-md-outline-variant text-md-outline hover:text-text-main hover:bg-surface-hover'
@@ -56,17 +65,17 @@ export const InputForms = ({ onChange }: InputFormsProps) => {
                 ))}
             </div>
 
-            {/* Form Rendering */}
+            {/* Form Rendering - Passing initialContent only if type matches to avoid pollution */}
             <div className="min-h-[300px]">
-                {activeType === 'url' && <UrlForm onChange={onChange} />}
-                {activeType === 'text' && <TextForm onChange={onChange} />}
+                {activeType === 'url' && <UrlForm onChange={onChange} initialValue={initialType === 'url' ? initialContent : ''} />}
+                {activeType === 'text' && <TextForm onChange={onChange} initialValue={initialType === 'text' ? initialContent : ''} />}
                 {activeType === 'email' && <EmailForm onChange={onChange} />}
                 {activeType === 'phone' && <PhoneForm mode="phone" onChange={onChange} />}
                 {activeType === 'sms' && <PhoneForm mode="sms" onChange={onChange} />}
                 {activeType === 'whatsapp' && <PhoneForm mode="whatsapp" onChange={onChange} />}
-                {activeType === 'wifi' && <WifiForm onChange={onChange} />}
-                {activeType === 'vcard' && <VCardForm onChange={onChange} />}
-                {activeType === 'event' && <EventForm onChange={onChange} />}
+                {activeType === 'wifi' && <WifiForm onChange={onChange} initialData={initialType === 'wifi' ? initialContent : null} />}
+                {activeType === 'vcard' && <VCardForm onChange={onChange} initialData={initialType === 'vcard' ? initialContent : null} />}
+                {activeType === 'event' && <EventForm onChange={onChange} initialData={initialType === 'event' ? initialContent : null} />}
             </div>
         </div>
     );

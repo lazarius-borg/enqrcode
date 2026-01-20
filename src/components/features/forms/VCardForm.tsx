@@ -4,14 +4,21 @@ import { qrPayloads } from '../../../utils/qrPayloads';
 
 type VCardFormProps = {
     onChange: (value: string) => void;
+    initialData?: any;
 };
 
-export const VCardForm = ({ onChange }: VCardFormProps) => {
+export const VCardForm = ({ onChange, initialData }: VCardFormProps) => {
     const [data, setData] = useState({
         firstName: '', lastName: '', organization: '', title: '',
         mobile: '', phone: '', email: '', website: '',
         street: '', city: '', zip: '', country: ''
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setData(prev => ({ ...prev, ...initialData }));
+        }
+    }, [initialData]);
 
     const [errors, setErrors] = useState<{ email?: string; website?: string }>({});
 

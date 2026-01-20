@@ -3,11 +3,17 @@ import { Input } from '../../ui/Input';
 
 type UrlFormProps = {
     onChange: (value: string) => void;
+    initialValue?: string;
 };
 
-export const UrlForm = ({ onChange }: UrlFormProps) => {
-    const [url, setUrl] = useState('');
+export const UrlForm = ({ onChange, initialValue }: UrlFormProps) => {
+    const [url, setUrl] = useState(initialValue || '');
     const [error, setError] = useState<string | null>(null);
+
+    // Update state if initialValue changes (e.g. late binding)
+    useEffect(() => {
+        if (initialValue) setUrl(initialValue);
+    }, [initialValue]);
 
     useEffect(() => {
         const trimmed = url.trim();

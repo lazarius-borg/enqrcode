@@ -15,6 +15,7 @@ import { AdSpace } from './components/features/AdSpace';
 import './index.css';
 
 import { ExportDialog } from './components/features/ExportDialog';
+import { detectShareType, parseVCard, parseEvent, parseWifi, type ShareType } from './utils/shareParsers';
 
 function App() {
   const [content, setContent] = useState<string>('');
@@ -52,6 +53,39 @@ function App() {
     }, 1500);
     return () => clearTimeout(timeoutId);
   }, [content, setHistory]);
+
+  // Handle Share Target
+  const [shareData, setShareData] = useState<{ type: ShareType, content: any } | null>(null);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const title = searchParams.get('title');
+    const text = searchParams.get('text');
+    const url = searchParams.get('url');
+
+    if (!title && !text && !url) return;
+
+    const rawText = text || '';
+    const rawUrl = url || '';
+
+    // Combined text for detection if needed, but usually we check them separately or prioritized
+    // If URL is present, it's likely a URL share.
+    // If text is present, could be anything.
+    // We pass rawUrl as hint.
+    const type = detectShareType(rawText, rawUrl);
+
+    let parsedContent: any = rawText;
+    if (type === 'url') parsedContent = rawUrl || rawText;
+
+    if (type === 'vcard') parsedContent = parseVCard(rawText);
+    else if (type === 'event') parsedContent = parseEvent(rawText);
+    else if (type === 'wifi') parsedContent = parseWifi(rawText);
+
+    setShareData({ type, content: parsedContent });
+
+    // Clear query params to prevent re-processing on refresh
+    window.history.replaceState({}, '', window.location.pathname);
+  }, []);
 
   const { qrCodeData, loading, error } = useQR(content, {
     color: options.color,
@@ -204,7 +238,11 @@ function App() {
 
             {/* Content Tab - Always mounted to preserve state, just hidden when inactive */}
             <div className={activeTab === 'content' ? 'block' : 'hidden'}>
-              <InputForms onChange={setContent} />
+              <InputForms
+                onChange={setContent}
+                initialType={shareData?.type}
+                initialContent={shareData?.content}
+              />
             </div>
 
             {activeTab === 'style' && (

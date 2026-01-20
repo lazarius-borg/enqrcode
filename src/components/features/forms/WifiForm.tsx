@@ -6,15 +6,25 @@ import { Eye, EyeOff } from 'lucide-react';
 
 type WifiFormProps = {
     onChange: (value: string) => void;
+    initialData?: any;
 };
 
-export const WifiForm = ({ onChange }: WifiFormProps) => {
+export const WifiForm = ({ onChange, initialData }: WifiFormProps) => {
     const [ssid, setSsid] = useState('');
     const [password, setPassword] = useState('');
     const [encryption, setEncryption] = useState<WifiEncryption>('WPA');
     const [hidden, setHidden] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        if (initialData) {
+            if (initialData.ssid) setSsid(initialData.ssid);
+            if (initialData.password) setPassword(initialData.password);
+            if (initialData.encryption) setEncryption(initialData.encryption as WifiEncryption);
+            if (initialData.hidden !== undefined) setHidden(!!initialData.hidden);
+        }
+    }, [initialData]);
 
     useEffect(() => {
         if (!ssid) {

@@ -5,9 +5,10 @@ import { X } from 'lucide-react';
 
 type EventFormProps = {
     onChange: (value: string) => void;
+    initialData?: any;
 };
 
-export const EventForm = ({ onChange }: EventFormProps) => {
+export const EventForm = ({ onChange, initialData }: EventFormProps) => {
     // Default to next hour
     const now = new Date();
     const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
@@ -22,6 +23,16 @@ export const EventForm = ({ onChange }: EventFormProps) => {
         end: toLocalISO(nextHour),
         description: ''
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setData(prev => ({
+                ...prev,
+                ...initialData,
+                // Ensure dates are stringified if passed as objects, though parser returns strings
+            }));
+        }
+    }, [initialData]);
 
     const [dateError, setDateError] = useState<string | null>(null);
     const startRef = useRef<HTMLInputElement>(null);

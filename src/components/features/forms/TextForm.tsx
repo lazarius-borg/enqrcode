@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type TextFormProps = {
     onChange: (value: string) => void;
+    initialValue?: string;
 };
 
-export const TextForm = ({ onChange }: TextFormProps) => {
-    const [text, setText] = useState('');
+export const TextForm = ({ onChange, initialValue }: TextFormProps) => {
+    const [text, setText] = useState(initialValue || '');
     const MAX_CHARS = 2000;
+
+    // Sync initialValue
+    useEffect(() => { if (initialValue) setText(initialValue); }, [initialValue]);
 
     const handleChange = (val: string) => {
         setText(val);
