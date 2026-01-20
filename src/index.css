@@ -86,10 +86,10 @@
   --md-sys-color-on-surface: #1a1c1e;
   --md-sys-color-surface-variant: #dfe2eb;
   --md-sys-color-on-surface-variant: #44474f;
-  --md-sys-color-outline: #4b5563;
-  /* Tailwind Gray 600 (was #74777f) */
-  --md-sys-color-outline-variant: #94a3b8;
-  /* Tailwind Gray 400 (was #c4c6d0) */
+  --md-sys-color-outline: #74777f;
+  /* Original MD3 Grey */
+  --md-sys-color-outline-variant: #c4c6d0;
+  /* Original MD3 Variant */
 }
 
 @theme {
@@ -118,6 +118,7 @@
   --color-md-surface-variant: var(--md-sys-color-surface-variant);
   --color-md-on-surface-variant: var(--md-sys-color-on-surface-variant);
   --color-md-outline: var(--md-sys-color-outline);
+  --color-md-outline-variant: var(--md-sys-color-outline-variant);
 
   --radius-md-xs: var(--md-sys-shape-corner-extra-small);
   --radius-md-sm: var(--md-sys-shape-corner-small);

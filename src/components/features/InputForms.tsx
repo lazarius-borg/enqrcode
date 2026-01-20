@@ -47,7 +47,7 @@ export const InputForms = ({ onChange }: InputFormsProps) => {
                         onClick={() => handleTypeChange(t.id as InputType)}
                         className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all whitespace-nowrap ${activeType === t.id
                             ? 'bg-primary border-primary text-white font-medium shadow-lg shadow-primary/25'
-                            : 'bg-surface border-white/10 text-slate-400 hover:text-white hover:bg-surface-hover'
+                            : 'bg-surface border-md-outline-variant text-md-outline hover:text-text-main hover:bg-surface-hover'
                             }`}
                     >
                         <t.icon size={16} />

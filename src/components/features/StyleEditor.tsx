@@ -58,24 +58,24 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
             {/* Colors Section */}
             <div className="space-y-3">
-                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Colors</h3>
+                <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider ml-1">Colors</h3>
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-surface border border-white/10 p-3 rounded-2xl flex items-center justify-between">
+                    <div className="bg-surface border border-md-outline-variant p-3 rounded-2xl flex items-center justify-between">
                         <span className="text-sm">Dots</span>
                         <input
                             type="color"
                             value={options.color.dark}
                             onChange={(e) => handleColorChange('dark', e.target.value)}
-                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 p-0 cursor-pointer"
+                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-md-outline-variant p-0 cursor-pointer"
                         />
                     </div>
-                    <div className="bg-surface border border-white/10 p-3 rounded-2xl flex items-center justify-between">
+                    <div className="bg-surface border border-md-outline-variant p-3 rounded-2xl flex items-center justify-between">
                         <span className="text-sm">BG</span>
                         <input
                             type="color"
                             value={options.color.light}
                             onChange={(e) => handleColorChange('light', e.target.value)}
-                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 p-0 cursor-pointer"
+                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-md-outline-variant p-0 cursor-pointer"
                         />
                     </div>
                 </div>
@@ -83,14 +83,14 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
             {/* Eyes Section */}
             <div className="space-y-4">
-                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Eyes</h3>
+                <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider ml-1">Eyes</h3>
 
                 {/* Frame */}
                 <div className="space-y-2">
-                    <span className="text-[10px] uppercase text-slate-500 ml-1">Properties</span>
+                    <span className="text-[10px] uppercase text-md-outline ml-1">Properties</span>
                     <div className="flex gap-3">
                         <div className="flex-1 space-y-2">
-                            <label className="text-[10px] text-slate-400 block text-center">Frame</label>
+                            <label className="text-[10px] text-md-outline block text-center">Frame</label>
                             <div className="grid grid-cols-3 gap-2">
                                 {eyeShapes.map((s) => (
                                     <button
@@ -98,7 +98,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                                         onClick={() => update('eyeFrame', s.id)}
                                         className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all ${options.eyeFrame === s.id || (!options.eyeFrame && s.id === 'square')
                                             ? 'bg-primary border-primary text-white'
-                                            : 'bg-surface border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                            : 'bg-surface border-md-outline-variant text-md-outline hover:bg-surface-hover hover:text-text-main'
                                             }`}
                                         title={s.label}
                                     >
@@ -108,7 +108,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                             </div>
                         </div>
                         <div className="flex-1 space-y-2">
-                            <label className="text-[10px] text-slate-400 block text-center">Ball</label>
+                            <label className="text-[10px] text-md-outline block text-center">Ball</label>
                             <div className="grid grid-cols-3 gap-2">
                                 {eyeShapes.map((s) => (
                                     <button
@@ -116,7 +116,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                                         onClick={() => update('eyeBall', s.id)}
                                         className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all ${options.eyeBall === s.id || (!options.eyeBall && s.id === 'square')
                                             ? 'bg-primary border-primary text-white'
-                                            : 'bg-surface border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                            : 'bg-surface border-md-outline-variant text-md-outline hover:bg-surface-hover hover:text-text-main'
                                             }`}
                                         title={s.label}
                                     >
@@ -131,7 +131,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
             {/* Pattern Type */}
             <div className="space-y-3">
-                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Pattern</h3>
+                <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider ml-1">Pattern</h3>
                 <div className="grid grid-cols-3 gap-3">
                     {patterns.map((p) => (
                         <button
@@ -139,7 +139,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                             onClick={() => update('pattern', p.id)}
                             className={`py-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${options.pattern === p.id
                                 ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
-                                : 'bg-surface border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                : 'bg-surface border-md-outline-variant text-md-outline hover:bg-surface-hover hover:text-text-main'
                                 }`}
                         >
                             <p.icon size={20} className={options.pattern === p.id ? 'fill-current' : ''} />
@@ -151,7 +151,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
             {/* Frames Section */}
             <div className="space-y-3">
-                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Frames</h3>
+                <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider ml-1">Frames</h3>
 
                 <div className="grid grid-cols-3 gap-3">
                     {frames.map((frame) => (
@@ -160,7 +160,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                             onClick={() => update('frame', frame.id)}
                             className={`aspect-square bg-surface border rounded-xl flex flex-col items-center justify-center gap-2 transition-all ${options.frame === frame.id
                                 ? 'bg-primary/10 border-primary text-white'
-                                : 'border-white/10 text-slate-400 hover:bg-surface-hover hover:text-white'
+                                : 'border-md-outline-variant text-md-outline hover:bg-surface-hover hover:text-text-main'
                                 }`}
                         >
                             {frame.icon
@@ -187,7 +187,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
 
             {/* Logo Section */}
             <div className="space-y-3">
-                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider ml-1">Logo</h3>
+                <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider ml-1">Logo</h3>
                 <div className="flex gap-4 items-center">
                     <div className="relative">
                         <input
@@ -274,12 +274,12 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                         />
                         <label
                             htmlFor="logo-upload"
-                            className="flex flex-col items-center justify-center w-20 h-20 bg-surface border border-white/10 rounded-xl cursor-pointer hover:bg-surface-hover transition-colors overflow-hidden"
+                            className="flex flex-col items-center justify-center w-20 h-20 bg-surface border border-md-outline-variant rounded-xl cursor-pointer hover:bg-surface-hover transition-colors overflow-hidden"
                         >
                             {options.logo ? (
                                 <img src={options.logo} alt="Logo" className="w-full h-full object-contain p-2" />
                             ) : (
-                                <div className="flex flex-col items-center gap-1 text-slate-400">
+                                <div className="flex flex-col items-center gap-1 text-md-outline">
                                     <LayoutGrid size={20} />
                                     <span className="text-[10px]">Upload</span>
                                 </div>
@@ -296,7 +296,7 @@ export const StyleEditor = ({ options, onChange }: StyleEditorProps) => {
                         </button>
                     )}
 
-                    <div className="text-xs text-slate-500 max-w-[150px]">
+                    <div className="text-xs text-md-outline max-w-[150px]">
                         Upload a logo to place in the center (forces High error correction).
                     </div>
                 </div>
