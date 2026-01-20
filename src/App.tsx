@@ -168,17 +168,17 @@ function App() {
 
         {/* PREVIEW CONTAINER */}
         {/* Mobile: Block in flow. Desktop: Col 2, Fixed/Flex Center. */}
-        <div className="p-4 lg:p-0 lg:col-start-2 lg:row-start-1 lg:row-span-full lg:h-full lg:flex lg:flex-col-reverse lg:gap-8 lg:items-center lg:justify-end lg:pt-6 lg:bg-bg/50 relative">
+        <div className="p-4 lg:p-0 lg:col-start-2 lg:row-start-1 lg:row-span-full lg:h-full lg:flex lg:flex-col-reverse lg:gap-8 lg:items-center lg:justify-end lg:pt-6 relative">
           <PreviewCard
             dataUrl={qrCodeData}
             loading={loading}
             onDownload={handleDownloadClick}
             onShare={handleShare}
-            className="lg:max-w-[400px] lg:shadow-2xl lg:mb-0"
+            className="lg:max-w-[400px] lg:mb-0"
           />
 
-          {/* Desktop Background Decoration (Optional) */}
-          <div className="hidden lg:block absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 to-transparent opacity-50"></div>
+          {/* Desktop Background Decoration (Optional) - Removed to clear background */}
+          {/* <div className="hidden lg:block absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 to-transparent opacity-50"></div> */}
 
           {/* Ad Space - Mobile: Below Preview. Desktop: Above Preview (via flex-col-reverse) */}
           <div className="flex justify-center w-full">
