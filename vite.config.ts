@@ -44,7 +44,7 @@ export default defineConfig({
         screenshots: [
           {
             src: 'pwa-screenshot-mobile.png',
-            sizes: '360x780',
+            sizes: '412x915',
             type: 'image/png',
             form_factor: 'narrow',
             label: 'Mobile Screen'
