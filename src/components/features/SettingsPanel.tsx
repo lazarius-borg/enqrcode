@@ -29,10 +29,10 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
                     <Sliders size={16} className="text-primary" />
-                    <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider">Resolution (Output Size)</h3>
+                    <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider">Resolution (Output Size)</h3>
                 </div>
 
-                <div className="bg-surface border border-white/10 rounded-2xl p-4">
+                <div className="bg-surface border border-md-outline-variant rounded-2xl p-4">
                     <div className="flex justify-between items-center mb-4">
                         <span className="text-sm font-medium text-text-main">Export Quality</span>
                         <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">{options.width || 1000}px</span>
@@ -45,9 +45,9 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
                         step="100"
                         value={options.width || 1000}
                         onChange={(e) => update('width', parseInt(e.target.value))}
-                        className="w-full accent-primary h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                        className="w-full accent-primary h-2 bg-md-surface-variant/50 rounded-lg appearance-none cursor-pointer"
                     />
-                    <div className="flex justify-between text-[10px] text-slate-500 mt-2">
+                    <div className="flex justify-between text-[10px] text-md-outline mt-2">
                         <span>Low (500px)</span>
                         <span>High (2000px)</span>
                     </div>
@@ -58,7 +58,7 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
                     <Shield size={16} className="text-primary" />
-                    <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider">Error Correction</h3>
+                    <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider">Error Correction</h3>
                 </div>
 
                 <div className="grid grid-cols-1 gap-3">
@@ -68,21 +68,21 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
                             onClick={() => update('errorCorrectionLevel', level.id)}
                             className={`flex items-center gap-4 p-3 rounded-xl border transition-all text-left ${(options.errorCorrectionLevel || 'M') === level.id
                                 ? 'bg-primary border-primary shadow-lg shadow-primary/10'
-                                : 'bg-surface border-white/10 hover:bg-surface-hover hover:border-white/20'
+                                : 'bg-surface border-md-outline-variant hover:bg-surface-hover hover:border-primary/50'
                                 }`}
                         >
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${(options.errorCorrectionLevel || 'M') === level.id
                                 ? 'bg-white text-primary'
-                                : 'bg-white/10 text-slate-400'
+                                : 'bg-md-surface-variant text-md-outline'
                                 }`}>
                                 {level.id}
                             </div>
                             <div>
-                                <div className={`text-sm font-medium ${(options.errorCorrectionLevel || 'M') === level.id ? 'text-white' : 'text-slate-300'
+                                <div className={`text-sm font-medium ${(options.errorCorrectionLevel || 'M') === level.id ? 'text-white' : 'text-text-main'
                                     }`}>
                                     {level.label}
                                 </div>
-                                <div className="text-[11px] text-slate-500 leading-tight">
+                                <div className="text-[11px] text-md-outline leading-tight">
                                     {level.desc}
                                 </div>
                             </div>
@@ -95,7 +95,7 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
                     <Zap size={16} className="text-primary" />
-                    <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider">File Format</h3>
+                    <h3 className="text-xs uppercase font-bold text-md-outline tracking-wider">File Format</h3>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                     {['png', 'jpeg', 'svg'].map((fmt) => (
@@ -104,7 +104,7 @@ export const SettingsPanel = ({ options, onChange }: SettingsPanelProps) => {
                             onClick={() => update('fileFormat', fmt)}
                             className={`py-3 rounded-xl border font-medium text-sm transition-all uppercase ${(options.fileFormat || 'png') === fmt
                                 ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
-                                : 'bg-surface border-white/10 text-slate-400 hover:text-text-main hover:bg-surface-hover'
+                                : 'bg-surface border-md-outline-variant text-md-outline hover:text-text-main hover:bg-surface-hover'
                                 }`}
                         >
                             {fmt}

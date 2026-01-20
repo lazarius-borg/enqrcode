@@ -202,9 +202,10 @@ function App() {
           {/* Content Panels */}
           <div className="px-4 pb-20 lg:py-6 lg:px-6 lg:flex-1 animate-fade-in">
 
-            {activeTab === 'content' && (
+            {/* Content Tab - Always mounted to preserve state, just hidden when inactive */}
+            <div className={activeTab === 'content' ? 'block' : 'hidden'}>
               <InputForms onChange={setContent} />
-            )}
+            </div>
 
             {activeTab === 'style' && (
               <StyleEditor options={options} onChange={setOptions} />

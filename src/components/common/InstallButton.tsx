@@ -1,6 +1,7 @@
 import { ArrowDownToLine } from 'lucide-react';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { IOSExecInstructions } from './IOSExecInstructions';
+import { MD3Button } from './MD3Button';
 
 type InstallButtonProps = {
     isMobile?: boolean;
@@ -19,13 +20,14 @@ export const InstallButton = ({ isMobile = false, className = '' }: InstallButto
     if (isMobile) {
         return (
             <>
-                <button
+                <MD3Button
                     onClick={install}
-                    className={`p-2 text-primary hover:bg-primary/10 rounded-full transition-colors ${className}`}
+                    variant="text"
+                    className={`rounded-full w-10 h-10 p-0 min-w-0 ${className}`}
                     title="Install App"
                 >
                     <ArrowDownToLine size={24} />
-                </button>
+                </MD3Button>
                 {platform === 'ios' && (
                     <IOSExecInstructions isOpen={showIOSInstructions} onClose={closeIOSInstructions} />
                 )}
@@ -35,14 +37,14 @@ export const InstallButton = ({ isMobile = false, className = '' }: InstallButto
 
     return (
         <>
-            <button
+            <MD3Button
                 onClick={install}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 mt-auto rounded-xl text-sm font-medium transition-all duration-200 
-                bg-primary/10 text-primary hover:bg-primary hover:text-white border border-primary/20 hover:border-primary ${className}`}
+                variant="tonal"
+                className={`w-full justify-start mt-auto ${className}`}
+                icon={<ArrowDownToLine size={18} />}
             >
-                <ArrowDownToLine size={18} />
-                <span>Install App</span>
-            </button>
+                Install App
+            </MD3Button>
             {platform === 'ios' && (
                 <IOSExecInstructions isOpen={showIOSInstructions} onClose={closeIOSInstructions} />
             )}

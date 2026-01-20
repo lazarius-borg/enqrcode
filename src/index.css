@@ -2,6 +2,7 @@
 
 /* Base Variables (Default = Dark Mode) */
 :root {
+  /* Existing Variables */
   --color-bg: #0f172a;
   --color-surface: #1e293b;
   --color-surface-hover: #334155;
@@ -10,6 +11,39 @@
   --color-text-main: #ffffff;
   --color-text-dim: #94a3b8;
   --color-border: rgba(255, 255, 255, 0.1);
+
+  /* Material Design 3 Tokens (Dark Mode Default) */
+  --md-sys-color-primary: #aecbfa;
+  /* Blue 200 */
+  --md-sys-color-on-primary: #00325b;
+  --md-sys-color-primary-container: #00497d;
+  --md-sys-color-on-primary-container: #d1e4ff;
+  --md-sys-color-secondary: #bbc7db;
+  --md-sys-color-on-secondary: #253140;
+  --md-sys-color-secondary-container: #3b4858;
+  --md-sys-color-on-secondary-container: #d7e3f7;
+  --md-sys-color-tertiary: #d6bee4;
+  --md-sys-color-on-tertiary: #3b2948;
+  --md-sys-color-tertiary-container: #523f5f;
+  --md-sys-color-on-tertiary-container: #f2daff;
+  --md-sys-color-error: #ffb4ab;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-background: #0f172a;
+  --md-sys-color-on-background: #e2e2e6;
+  --md-sys-color-surface: #0f172a;
+  --md-sys-color-on-surface: #e2e2e6;
+  --md-sys-color-surface-variant: #44474f;
+  --md-sys-color-on-surface-variant: #c4c6d0;
+  --md-sys-color-outline: #8e9099;
+  --md-sys-color-outline-variant: #44474f;
+
+  /* Shapes */
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
 }
 
 /* Light Mode Overrides */
@@ -30,6 +64,32 @@
   /* Slate 500 */
   --color-border: #e2e8f0;
   /* Slate 200 */
+
+  /* Material Design 3 Tokens (Light Mode) */
+  --md-sys-color-primary: #005fa3;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #d1e4ff;
+  --md-sys-color-on-primary-container: #001c39;
+  --md-sys-color-secondary: #535f70;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #d7e3f7;
+  --md-sys-color-on-secondary-container: #101c2b;
+  --md-sys-color-tertiary: #6b5778;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #f2daff;
+  --md-sys-color-on-tertiary-container: #251431;
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-background: #f8fafc;
+  --md-sys-color-on-background: #1a1c1e;
+  --md-sys-color-surface: #f8fafc;
+  --md-sys-color-on-surface: #1a1c1e;
+  --md-sys-color-surface-variant: #dfe2eb;
+  --md-sys-color-on-surface-variant: #44474f;
+  --md-sys-color-outline: #4b5563;
+  /* Tailwind Gray 600 (was #74777f) */
+  --md-sys-color-outline-variant: #94a3b8;
+  /* Tailwind Gray 400 (was #c4c6d0) */
 }
 
 @theme {
@@ -45,6 +105,26 @@
   --color-text-main: var(--color-text-main);
   --color-text-dim: var(--color-text-dim);
   --color-border: var(--color-border);
+
+  /* MD3 Expose to Tailwind */
+  --color-md-primary: var(--md-sys-color-primary);
+  --color-md-on-primary: var(--md-sys-color-on-primary);
+  --color-md-primary-container: var(--md-sys-color-primary-container);
+  --color-md-on-primary-container: var(--md-sys-color-on-primary-container);
+  --color-md-secondary: var(--md-sys-color-secondary);
+  --color-md-on-secondary: var(--md-sys-color-on-secondary);
+  --color-md-surface: var(--md-sys-color-surface);
+  --color-md-on-surface: var(--md-sys-color-on-surface);
+  --color-md-surface-variant: var(--md-sys-color-surface-variant);
+  --color-md-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --color-md-outline: var(--md-sys-color-outline);
+
+  --radius-md-xs: var(--md-sys-shape-corner-extra-small);
+  --radius-md-sm: var(--md-sys-shape-corner-small);
+  --radius-md-md: var(--md-sys-shape-corner-medium);
+  --radius-md-lg: var(--md-sys-shape-corner-large);
+  --radius-md-xl: var(--md-sys-shape-corner-extra-large);
+  --radius-md-full: var(--md-sys-shape-corner-full);
 
   /* Animations */
   --animate-fade-in: fadeIn 0.3s ease-in-out;
