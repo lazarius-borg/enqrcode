@@ -28,21 +28,21 @@ export const ExportDialog = ({ isOpen, onClose, onConfirm, defaultFilename, form
             ></div>
 
             {/* Dialog */}
-            <div className="relative w-full max-w-sm bg-bg border border-white/10 rounded-3xl p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-sm bg-surface border border-border rounded-[28px] p-6 shadow-2xl animate-in zoom-in-95 duration-200">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                    className="absolute top-4 right-4 p-2 text-text-dim hover:text-text-main hover:bg-surface-hover rounded-full transition-colors"
                 >
                     <X size={20} />
                 </button>
 
                 <div className="space-y-6">
                     <div className="text-center">
-                        <div className="w-12 h-12 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
                             <Download size={24} />
                         </div>
-                        <h2 className="text-lg font-semibold text-white">Export QR Code</h2>
-                        <p className="text-sm text-slate-400">Enter a name for your file</p>
+                        <h2 className="text-lg font-semibold text-text-main">Export QR Code</h2>
+                        <p className="text-sm text-text-dim">Enter a name for your file</p>
                     </div>
 
                     <div className="relative">
@@ -50,27 +50,27 @@ export const ExportDialog = ({ isOpen, onClose, onConfirm, defaultFilename, form
                             type="text"
                             value={filename}
                             onChange={(e) => setFilename(e.target.value)}
-                            className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary pr-16"
+                            className="w-full bg-bg border border-border rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary pr-16 placeholder:text-text-dim/50"
                             placeholder="filename"
                             autoFocus
                             onKeyDown={(e) => e.key === 'Enter' && onConfirm(filename)}
                         />
-                        <div className="absolute right-4 top-3.5 text-slate-500 font-medium select-none pointer-events-none">
+                        <div className="absolute right-4 top-3.5 text-text-dim font-medium select-none pointer-events-none">
                             .{format}
                         </div>
                     </div>
 
                     <div className="flex gap-3">
                         <Button
-                            variant="glass"
-                            className="flex-1 bg-surface border-white/10 text-white hover:bg-white/5"
+                            variant="secondary"
+                            className="flex-1 justify-center"
                             onClick={onClose}
                         >
                             Cancel
                         </Button>
                         <Button
                             variant="primary"
-                            className="flex-1 bg-primary text-white hover:bg-primary-hover border-none"
+                            className="flex-1 justify-center"
                             onClick={() => onConfirm(filename)}
                         >
                             Download

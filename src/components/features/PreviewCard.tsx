@@ -35,10 +35,10 @@ export const PreviewCard = ({ dataUrl, loading, onDownload, onShare, className =
             </div>
 
             <div className="flex gap-4">
-                <Button variant="glass" className="flex-1 bg-surface justify-center h-12 rounded-xl" onClick={onShare}>
+                <Button variant="secondary" className="flex-1 justify-center h-12 rounded-xl" onClick={onShare}>
                     <Share2 size={18} /> Share
                 </Button>
-                <Button variant="primary" className="flex-1 bg-primary hover:bg-primary-hover text-white justify-center h-12 rounded-xl border-none" onClick={onDownload}>
+                <Button variant="primary" className="flex-1 justify-center h-12 rounded-xl border-none" onClick={onDownload}>
                     <Download size={18} /> Export
                 </Button>
             </div>
