@@ -3,12 +3,15 @@ import App from './App';
 import { describe, it, expect } from 'vitest';
 
 import { PWAInstallProvider } from './context/PWAInstallContext';
+import { HistoryProvider } from './context/HistoryContext';
 
 describe('App', () => {
     it('renders without crashing and shows title', () => {
         render(
             <PWAInstallProvider>
-                <App />
+                <HistoryProvider>
+                    <App />
+                </HistoryProvider>
             </PWAInstallProvider>
         );
         // Check for "QR Code Generator" text which likely appears in the header or sidebar title
@@ -21,7 +24,9 @@ describe('App', () => {
     it('renders tab navigation on desktop', () => {
         render(
             <PWAInstallProvider>
-                <App />
+                <HistoryProvider>
+                    <App />
+                </HistoryProvider>
             </PWAInstallProvider>
         );
         // Verify tabs exist. Based on TabNavigation.tsx names might be Content, Style, Settings etc.

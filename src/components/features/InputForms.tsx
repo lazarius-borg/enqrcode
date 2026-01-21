@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
     Link, Type, Wifi, Contact, Mail, Phone, MessageSquare, Calendar, MessagesSquare
 } from 'lucide-react';
@@ -11,24 +11,27 @@ import { WifiForm } from './forms/WifiForm';
 import { VCardForm } from './forms/VCardForm';
 import { EventForm } from './forms/EventForm';
 
-import type { ShareType } from '../../utils/shareParsers';
+import { parseVCard, parseEvent, parseWifi, type ShareType } from '../../utils/shareParsers';
 
 type InputFormsProps = {
     onChange: (value: string) => void;
+    currentContent?: string;
     initialType?: ShareType;
     initialContent?: any;
+    activeType: ShareType | 'sms' | 'whatsapp';
+    onTypeChange: (type: ShareType | 'sms' | 'whatsapp') => void;
 };
 
-export const InputForms = ({ onChange, initialType, initialContent }: InputFormsProps) => {
-    const [activeType, setActiveType] = useState<ShareType | 'sms' | 'whatsapp'>('url');
+export const InputForms = ({ onChange, currentContent, initialType, initialContent, activeType, onTypeChange }: InputFormsProps) => {
+    // const [activeType, setActiveType] = useState<ShareType | 'sms' | 'whatsapp'>('url'); // Lifted to App
     const tabsRef = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
     // Sync active type when initialType provided (e.g. from Share Target)
     useEffect(() => {
         if (initialType) {
-            setActiveType(initialType);
+            onTypeChange(initialType);
         }
-    }, [initialType]);
+    }, [initialType, onTypeChange]);
 
     // Scroll active tab into view
     useEffect(() => {
@@ -42,7 +45,7 @@ export const InputForms = ({ onChange, initialType, initialContent }: InputForms
     }, [activeType]);
 
     const handleTypeChange = (type: ShareType | 'sms' | 'whatsapp') => {
-        setActiveType(type);
+        onTypeChange(type);
         onChange(''); // Clear content on switch
     };
 
@@ -78,17 +81,17 @@ export const InputForms = ({ onChange, initialType, initialContent }: InputForms
                 ))}
             </div>
 
-            {/* Form Rendering - Passing initialContent only if type matches to avoid pollution */}
+            {/* Form Rendering - With improved content syncing */}
             <div className="min-h-[300px]">
-                {activeType === 'url' && <UrlForm onChange={onChange} initialValue={initialType === 'url' ? initialContent : ''} />}
-                {activeType === 'text' && <TextForm onChange={onChange} initialValue={initialType === 'text' ? initialContent : ''} />}
+                {activeType === 'url' && <UrlForm onChange={onChange} initialValue={currentContent} />}
+                {activeType === 'text' && <TextForm onChange={onChange} initialValue={currentContent} />}
                 {activeType === 'email' && <EmailForm onChange={onChange} />}
-                {activeType === 'phone' && <PhoneForm mode="phone" onChange={onChange} initialValue={initialType === 'phone' ? initialContent : ''} />}
-                {activeType === 'sms' && <PhoneForm mode="sms" onChange={onChange} initialMessage={typeof initialContent === 'string' ? initialContent : ''} />}
-                {activeType === 'whatsapp' && <PhoneForm mode="whatsapp" onChange={onChange} initialMessage={typeof initialContent === 'string' ? initialContent : ''} />}
-                {activeType === 'wifi' && <WifiForm onChange={onChange} initialData={initialType === 'wifi' ? initialContent : null} />}
-                {activeType === 'vcard' && <VCardForm onChange={onChange} initialData={initialType === 'vcard' ? initialContent : null} />}
-                {activeType === 'event' && <EventForm onChange={onChange} initialData={initialType === 'event' ? initialContent : null} />}
+                {activeType === 'phone' && <PhoneForm mode="phone" onChange={onChange} />}
+                {activeType === 'sms' && <PhoneForm mode="sms" onChange={onChange} initialMessage={currentContent} />}
+                {activeType === 'whatsapp' && <PhoneForm mode="whatsapp" onChange={onChange} initialMessage={currentContent} />}
+                {activeType === 'wifi' && <WifiForm onChange={onChange} initialData={currentContent && activeType === 'wifi' ? parseWifi(currentContent) : (initialType === 'wifi' ? initialContent : null)} />}
+                {activeType === 'vcard' && <VCardForm onChange={onChange} initialData={currentContent && activeType === 'vcard' ? parseVCard(currentContent) : (initialType === 'vcard' ? initialContent : null)} />}
+                {activeType === 'event' && <EventForm onChange={onChange} initialData={currentContent && activeType === 'event' ? parseEvent(currentContent) : (initialType === 'event' ? initialContent : null)} />}
             </div>
         </div>
     );

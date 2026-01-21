@@ -11,15 +11,27 @@ export const TextForm = ({ onChange, initialValue }: TextFormProps) => {
 
     // Sync initialValue
     useEffect(() => {
-        if (initialValue) {
+        if (initialValue !== undefined) {
             setText(initialValue);
             // Trigger parent update immediately so preview is generated
             // Use setTimeout to avoid race conditions during mounting/switching
             const t = setTimeout(() => {
+                // Only update parent if valid, allowing clearing
                 if (initialValue.length <= MAX_CHARS) {
+                    // We don't need to call onChange if it matches? 
+                    // If InputForms passes `content` back to us, calling `onChange` again is redundant but safe loop-wise if values match.
+                    // Actually, if we just setText, the component state updates.
+                    // If we don't call onChange, parent content remains same (which it is, since it passed it in).
+                    // But if this is "initial" load from Share Target (which we removed from InputForms logic for TextForm mostly), 
+                    // we might need it? 
+                    // Wait, I removed `initialContent` usage for TextForm in InputForms.
+                    // So `currentContent` comes in. `currentContent` IS the parent state.
+                    // So calling `onChange(currentContent)` is redundant.
+                    // So we can arguably skip `onChange` here if it matches?
+                    // No, let's leave it for safety or remove it if problematic.
+                    // If I leave it, it's a loop: App render -> InputForms render -> TextForm effect -> onChange -> App setContent -> App render ...
+                    // React bails out if state doesn't change. `setContent` same value = no re-render.
                     onChange(initialValue);
-                } else {
-                    onChange('');
                 }
             }, 0);
             return () => clearTimeout(t);

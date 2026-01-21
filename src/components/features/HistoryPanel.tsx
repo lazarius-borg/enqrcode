@@ -1,25 +1,18 @@
 import { Clock, Trash2, ArrowRight } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useHistory, type HistoryItem } from '../../context/HistoryContext';
 
-type HistoryItem = {
-    id: string;
-    content: string;
-    type: 'url' | 'text' | 'email';
-    timestamp: number;
-};
+
 
 type HistoryPanelProps = {
-    onSelect: (content: string) => void;
+    onSelect: (item: HistoryItem) => void;
     isOpen: boolean;
     onClose: () => void;
 };
 
 export const HistoryPanel = ({ onSelect, isOpen, onClose }: HistoryPanelProps) => {
-    const [history, setHistory] = useLocalStorage<HistoryItem[]>('enqrcode-history', []);
-
-    const clearHistory = () => setHistory([]);
+    const { history, clearHistory } = useHistory();
 
     if (!isOpen) return null;
 
@@ -41,7 +34,7 @@ export const HistoryPanel = ({ onSelect, isOpen, onClose }: HistoryPanelProps) =
                     ) : (
                         history.map((item) => (
                             <Card key={item.id} padding="sm" className="bg-white/5 hover:bg-white/10 cursor-pointer group" >
-                                <div onClick={() => { onSelect(item.content); onClose(); }}>
+                                <div onClick={() => { onSelect(item); onClose(); }}>
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-xs uppercase tracking-wider text-white/50">{item.type}</span>
                                         <span className="text-xs text-white/30">{new Date(item.timestamp).toLocaleDateString()}</span>

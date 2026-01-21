@@ -9,7 +9,9 @@ import { HistoryPanel } from './components/features/HistoryPanel';
 import { Sidebar } from './components/layout/Sidebar';
 import { HistoryView } from './components/features/HistoryView';
 import { useQR } from './hooks/useQR';
-import { useLocalStorage } from './hooks/useLocalStorage';
+// import { useQR } from './hooks/useQR'; // Already imported
+// import { useLocalStorage } from './hooks/useLocalStorage'; // Removed as it is replaced by useHistory
+import { useHistory } from './context/HistoryContext';
 import type { CustomizationOptions } from './components/features/CustomizationPanel'; // Type
 import { AdSpace } from './components/features/AdSpace';
 import './index.css';
@@ -22,6 +24,26 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabId>('content');
   const [showHistory, setShowHistory] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [inputType, setInputType] = useState<ShareType | 'sms' | 'whatsapp'>('url');
+
+  const { addToHistory } = useHistory();
+
+  // Explicit History Save
+  const saveCurrentToHistory = () => {
+    if (content && content.length >= 4) {
+      addToHistory(content, inputType);
+    }
+  };
+
+  const handleInputTypeChange = (newType: ShareType | 'sms' | 'whatsapp') => {
+    saveCurrentToHistory();
+    setInputType(newType);
+  };
+
+  const handleOpenHistory = () => {
+    saveCurrentToHistory();
+    setShowHistory(true);
+  };
 
   const [options, setOptions] = useState<CustomizationOptions>({
     color: { dark: '#000000', light: '#ffffff' },
@@ -34,25 +56,7 @@ function App() {
     fileFormat: 'png'
   });
 
-  const [, setHistory] = useLocalStorage<any[]>('enqrcode-history', []);
 
-  // History Auto-save
-  useEffect(() => {
-    if (!content || content.length < 4) return;
-    const timeoutId = setTimeout(() => {
-      setHistory((prev: any[]) => {
-        if (prev.length > 0 && prev[0].content === content) return prev;
-        const newItem = {
-          id: Date.now().toString(),
-          content,
-          type: 'QR', // Generic for now
-          timestamp: Date.now()
-        };
-        return [newItem, ...prev].slice(50);
-      });
-    }, 1500);
-    return () => clearTimeout(timeoutId);
-  }, [content, setHistory]);
 
   // Handle Share Target
   const [shareData, setShareData] = useState<{ type: ShareType, content: any } | null>(null);
@@ -116,6 +120,11 @@ function App() {
       else if (type === 'wifi') parsedContent = parseWifi(rawText);
 
       setShareData({ type, content: parsedContent });
+
+      // Also set main content if it's a simple string type, ensuring InputForms populates
+      if (typeof parsedContent === 'string') {
+        setContent(parsedContent);
+      }
 
       // Clear query params
       window.history.replaceState({}, '', window.location.pathname);
@@ -197,6 +206,7 @@ function App() {
 
   // Helper to sync Active Tab changes from Sidebar
   const handleTabChange = (id: TabId) => {
+    saveCurrentToHistory();
     setActiveTab(id);
   };
 
@@ -212,13 +222,19 @@ function App() {
 
       {/* MOBILE HEADER - Sticky */}
       <div className="lg:hidden sticky top-0 z-50">
-        <MobileHeader onHistoryClick={() => setShowHistory(true)} />
+        <MobileHeader onHistoryClick={handleOpenHistory} />
       </div>
 
       <HistoryPanel
         isOpen={showHistory}
         onClose={() => setShowHistory(false)}
-        onSelect={(val) => { setContent(val); setShowHistory(false); }}
+        onSelect={(item) => {
+          setContent(item.content);
+          // Handle legacy 'QR' type or other mismatches by defaulting to 'text' if needed
+          const type = (item.type as string) === 'QR' ? 'text' : item.type;
+          setInputType(type);
+          setShowHistory(false);
+        }}
       />
 
       {/* 
@@ -277,8 +293,11 @@ function App() {
             <div className={activeTab === 'content' ? 'block' : 'hidden'}>
               <InputForms
                 onChange={setContent}
+                currentContent={content}
                 initialType={shareData?.type}
                 initialContent={shareData?.content}
+                activeType={inputType}
+                onTypeChange={handleInputTypeChange}
               />
             </div>
 
@@ -293,7 +312,11 @@ function App() {
             {/* Desktop History View */}
             {activeTab === 'history' && (
               <div className="hidden lg:block h-full">
-                <HistoryView onSelect={(val) => { setContent(val); }} />
+                <HistoryView onSelect={(item) => {
+                  setContent(item.content);
+                  const type = (item.type as string) === 'QR' ? 'text' : item.type;
+                  setInputType(type);
+                }} />
               </div>
             )}
 

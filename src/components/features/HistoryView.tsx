@@ -1,23 +1,16 @@
 import { Trash2, ArrowRight, Clock } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useHistory, type HistoryItem } from '../../context/HistoryContext';
 
-type HistoryItem = {
-    id: string;
-    content: string;
-    type: 'url' | 'text' | 'email';
-    timestamp: number;
-};
+
 
 type HistoryViewProps = {
-    onSelect: (content: string) => void;
+    onSelect: (item: HistoryItem) => void;
 };
 
 export const HistoryView = ({ onSelect }: HistoryViewProps) => {
-    const [history, setHistory] = useLocalStorage<HistoryItem[]>('enqrcode-history', []);
-
-    const clearHistory = () => setHistory([]);
+    const { history, clearHistory } = useHistory();
 
     return (
         <div className="flex flex-col h-full">
@@ -35,7 +28,7 @@ export const HistoryView = ({ onSelect }: HistoryViewProps) => {
                 ) : (
                     history.map((item) => (
                         <Card key={item.id} padding="sm" className="bg-surface hover:bg-surface-hover cursor-pointer group border-border">
-                            <div onClick={() => onSelect(item.content)}>
+                            <div onClick={() => onSelect(item)}>
                                 <div className="flex items-center justify-between mb-1">
                                     <span className="text-xs uppercase tracking-wider text-text-dim">{item.type}</span>
                                     <span className="text-xs text-text-dim">{new Date(item.timestamp).toLocaleDateString()}</span>
