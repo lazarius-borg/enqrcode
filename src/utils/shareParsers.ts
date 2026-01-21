@@ -65,9 +65,15 @@ export const parseVCard = (text: string) => {
 
 export const parseEvent = (text: string) => {
     // Simple parser for VEvent
+    // First, isolate the VEVENT block to avoid matching VTIMEZONE or other components
+    const eventBlockMatch = text.match(/BEGIN:VEVENT([\s\S]*?)END:VEVENT/i);
+    const eventText = eventBlockMatch ? eventBlockMatch[1] : text;
+
     const getValue = (key: string) => {
+        // Match KEY:VALUE or KEY;TYPE=...:VALUE
+        // Use eventText instead of raw text
         const regex = new RegExp(`^${key}(?:;[^:]*)*:(.*)$`, 'mi');
-        const match = text.match(regex);
+        const match = eventText.match(regex);
         return match ? match[1].trim() : '';
     };
 

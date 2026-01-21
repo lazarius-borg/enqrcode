@@ -55,7 +55,7 @@ export default defineConfig({
             files: [
               {
                 name: 'file',
-                accept: ['text/vcard', 'text/x-vcard', 'application/vcard', '.vcf']
+                accept: ['text/vcard', 'text/x-vcard', 'application/vcard', '.vcf', 'text/calendar', '.ics']
               }
             ]
           }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Link, Type, Wifi, Contact, Mail, Phone, MessageSquare, Calendar, MessagesSquare
 } from 'lucide-react';
@@ -21,6 +21,7 @@ type InputFormsProps = {
 
 export const InputForms = ({ onChange, initialType, initialContent }: InputFormsProps) => {
     const [activeType, setActiveType] = useState<ShareType | 'sms' | 'whatsapp'>('url');
+    const tabsRef = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
     // Sync active type when initialType provided (e.g. from Share Target)
     useEffect(() => {
@@ -28,6 +29,17 @@ export const InputForms = ({ onChange, initialType, initialContent }: InputForms
             setActiveType(initialType);
         }
     }, [initialType]);
+
+    // Scroll active tab into view
+    useEffect(() => {
+        if (activeType && tabsRef.current[activeType]) {
+            tabsRef.current[activeType]?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    }, [activeType]);
 
     const handleTypeChange = (type: ShareType | 'sms' | 'whatsapp') => {
         setActiveType(type);
@@ -53,6 +65,7 @@ export const InputForms = ({ onChange, initialType, initialContent }: InputForms
                 {types.map((t) => (
                     <button
                         key={t.id}
+                        ref={(el) => { tabsRef.current[t.id] = el }}
                         onClick={() => handleTypeChange(t.id as ShareType | 'sms' | 'whatsapp')}
                         className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all whitespace-nowrap ${activeType === t.id
                             ? 'bg-primary border-primary text-white font-medium shadow-lg shadow-primary/25'

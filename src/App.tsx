@@ -98,10 +98,12 @@ function App() {
       const rawText = text || fileContent || '';
       const rawUrl = url || '';
 
-      // Prioritize VCard if file content is present
+      // Prioritize VCard/Event if file content is present
       let type: ShareType = 'text';
       if (fileContent && fileContent.includes('BEGIN:VCARD')) {
         type = 'vcard';
+      } else if (fileContent && fileContent.includes('BEGIN:VCALENDAR')) {
+        type = 'event';
       } else {
         type = detectShareType(rawText, rawUrl);
       }
