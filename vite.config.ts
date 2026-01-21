@@ -10,6 +10,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
@@ -42,12 +45,19 @@ export default defineConfig({
           }
         ],
         share_target: {
-          action: '/',
-          method: 'GET',
+          action: '/share-target',
+          method: 'POST',
+          enctype: 'multipart/form-data',
           params: {
             title: 'title',
             text: 'text',
-            url: 'url'
+            url: 'url',
+            files: [
+              {
+                name: 'file',
+                accept: ['text/vcard', 'text/x-vcard', 'application/vcard', '.vcf']
+              }
+            ]
           }
         },
         screenshots: [

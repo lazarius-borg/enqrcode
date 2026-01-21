@@ -58,33 +58,68 @@ function App() {
   const [shareData, setShareData] = useState<{ type: ShareType, content: any } | null>(null);
 
   useEffect(() => {
+    // Check if redirected from SW with shared=true
     const searchParams = new URLSearchParams(window.location.search);
-    const title = searchParams.get('title');
-    const text = searchParams.get('text');
-    const url = searchParams.get('url');
+    const isShared = searchParams.get('shared') === 'true';
 
-    if (!title && !text && !url) return;
+    const handleShare = async () => {
+      let title: string | null = null;
+      let text: string | null = null;
+      let url: string | null = null;
+      let fileContent: string | null = null;
 
-    const rawText = text || '';
-    const rawUrl = url || '';
+      if (isShared) {
+        // Read from Cache Storage
+        try {
+          const cache = await caches.open('enqrcode-shared-content');
+          const response = await cache.match('/shared-data');
+          if (response) {
+            const data = await response.json();
+            title = data.title;
+            text = data.text;
+            url = data.url;
+            fileContent = data.fileContent;
 
-    // Combined text for detection if needed, but usually we check them separately or prioritized
-    // If URL is present, it's likely a URL share.
-    // If text is present, could be anything.
-    // We pass rawUrl as hint.
-    const type = detectShareType(rawText, rawUrl);
+            // Cleanup
+            await cache.delete('/shared-data');
+          }
+        } catch (e) {
+          console.error('Error reading shared data:', e);
+        }
+      } else {
+        // Fallback to legacy GET params
+        title = searchParams.get('title');
+        text = searchParams.get('text');
+        url = searchParams.get('url');
+      }
 
-    let parsedContent: any = rawText;
-    if (type === 'url') parsedContent = rawUrl || rawText;
+      if (!title && !text && !url && !fileContent) return;
 
-    if (type === 'vcard') parsedContent = parseVCard(rawText);
-    else if (type === 'event') parsedContent = parseEvent(rawText);
-    else if (type === 'wifi') parsedContent = parseWifi(rawText);
+      const rawText = text || fileContent || '';
+      const rawUrl = url || '';
 
-    setShareData({ type, content: parsedContent });
+      // Prioritize VCard if file content is present
+      let type: ShareType = 'text';
+      if (fileContent && fileContent.includes('BEGIN:VCARD')) {
+        type = 'vcard';
+      } else {
+        type = detectShareType(rawText, rawUrl);
+      }
 
-    // Clear query params to prevent re-processing on refresh
-    window.history.replaceState({}, '', window.location.pathname);
+      let parsedContent: any = rawText;
+      if (type === 'url') parsedContent = rawUrl || rawText;
+
+      if (type === 'vcard') parsedContent = parseVCard(fileContent || rawText);
+      else if (type === 'event') parsedContent = parseEvent(rawText);
+      else if (type === 'wifi') parsedContent = parseWifi(rawText);
+
+      setShareData({ type, content: parsedContent });
+
+      // Clear query params
+      window.history.replaceState({}, '', window.location.pathname);
+    };
+
+    handleShare();
   }, []);
 
   const { qrCodeData, loading, error } = useQR(content, {
