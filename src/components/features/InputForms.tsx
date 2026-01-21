@@ -83,7 +83,7 @@ export const InputForms = ({ onChange, initialType, initialContent }: InputForms
                 {activeType === 'url' && <UrlForm onChange={onChange} initialValue={initialType === 'url' ? initialContent : ''} />}
                 {activeType === 'text' && <TextForm onChange={onChange} initialValue={initialType === 'text' ? initialContent : ''} />}
                 {activeType === 'email' && <EmailForm onChange={onChange} />}
-                {activeType === 'phone' && <PhoneForm mode="phone" onChange={onChange} />}
+                {activeType === 'phone' && <PhoneForm mode="phone" onChange={onChange} initialValue={initialType === 'phone' ? initialContent : ''} />}
                 {activeType === 'sms' && <PhoneForm mode="sms" onChange={onChange} />}
                 {activeType === 'whatsapp' && <PhoneForm mode="whatsapp" onChange={onChange} />}
                 {activeType === 'wifi' && <WifiForm onChange={onChange} initialData={initialType === 'wifi' ? initialContent : null} />}

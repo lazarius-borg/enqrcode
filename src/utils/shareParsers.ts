@@ -20,9 +20,16 @@ export const detectShareType = (text: string, urlParam?: string): ShareType => {
     // 5. Email (simple regex)
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return 'email';
 
-    // 6. Phone (simple regex, e.g. +1-555-555-5555 or 123-456-7890)
-    // Supports optional country code
-    if (/^(\+?[0-9]{1,3}[-\s\.]?)?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(trimmed)) return 'phone';
+    // 6. Phone
+    // More permissive check for International numbers
+    // Must strictly contain only phone-related characters: + digits space - . ( )
+    // Must have reasonable digit count (7-15)
+    // Must NOT look like an ISO date (YYYY-MM-DD)
+    const validPhoneChars = /^[+\d\s\-\.\(\)]+$/.test(trimmed);
+    const digitCount = trimmed.replace(/\D/g, '').length;
+    const isDate = /^\d{4}[-\/]\d{2}[-\/]\d{2}$/.test(trimmed);
+
+    if (validPhoneChars && !isDate && digitCount >= 7 && digitCount <= 15) return 'phone';
 
     // 7. Fallback
     return 'text';
