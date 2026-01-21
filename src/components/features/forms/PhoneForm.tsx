@@ -8,11 +8,12 @@ type PhoneFormProps = {
     mode: Mode;
     onChange: (value: string) => void;
     initialValue?: string;
+    initialMessage?: string;
 };
 
-export const PhoneForm = ({ mode, onChange, initialValue }: PhoneFormProps) => {
+export const PhoneForm = ({ mode, onChange, initialValue, initialMessage }: PhoneFormProps) => {
     const [number, setNumber] = useState(initialValue || '');
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState(initialMessage || '');
 
     const [error, setError] = useState<string | null>(null);
 
