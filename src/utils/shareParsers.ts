@@ -120,3 +120,31 @@ export const parseWifi = (text: string) => {
         hidden: text.includes('H:true')
     };
 };
+
+export const parsePhone = (text: string) => {
+    // tel:+123456789
+    return text.replace(/^tel:/i, '');
+};
+
+export const parseSms = (text: string) => {
+    // sms:+123456789?body=Message
+    const parts = text.split('?');
+    const number = parts[0].replace(/^sms:/i, '');
+    const params = new URLSearchParams(parts[1] || '');
+    return {
+        number,
+        message: params.get('body') || ''
+    };
+};
+
+export const parseWhatsapp = (text: string) => {
+    // https://wa.me/123456789?text=Message
+    try {
+        const url = new URL(text);
+        const number = url.pathname.replace('/', '');
+        const message = url.searchParams.get('text') || '';
+        return { number, message };
+    } catch {
+        return { number: '', message: '' };
+    }
+};

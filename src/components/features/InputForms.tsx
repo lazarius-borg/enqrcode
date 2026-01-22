@@ -11,7 +11,7 @@ import { WifiForm } from './forms/WifiForm';
 import { VCardForm } from './forms/VCardForm';
 import { EventForm } from './forms/EventForm';
 
-import { parseVCard, parseEvent, parseWifi, type ShareType } from '../../utils/shareParsers';
+import { parseVCard, parseEvent, parseWifi, parsePhone, parseSms, parseWhatsapp, type ShareType } from '../../utils/shareParsers';
 
 type InputFormsProps = {
     onChange: (value: string) => void;
@@ -61,6 +61,10 @@ export const InputForms = ({ onChange, currentContent, initialType, initialConte
         { id: 'event', label: 'Event', icon: Calendar },
     ] as const;
 
+    // Helper data extractors for complex initial states
+    const smsData = (activeType === 'sms' && currentContent) ? parseSms(currentContent) : { number: '', message: '' };
+    const waData = (activeType === 'whatsapp' && currentContent) ? parseWhatsapp(currentContent) : { number: '', message: '' };
+
     return (
         <div className="w-full">
             {/* Type Switcher Pills */}
@@ -86,9 +90,29 @@ export const InputForms = ({ onChange, currentContent, initialType, initialConte
                 {activeType === 'url' && <UrlForm onChange={onChange} initialValue={currentContent} />}
                 {activeType === 'text' && <TextForm onChange={onChange} initialValue={currentContent} />}
                 {activeType === 'email' && <EmailForm onChange={onChange} />}
-                {activeType === 'phone' && <PhoneForm mode="phone" onChange={onChange} />}
-                {activeType === 'sms' && <PhoneForm mode="sms" onChange={onChange} initialMessage={currentContent} />}
-                {activeType === 'whatsapp' && <PhoneForm mode="whatsapp" onChange={onChange} initialMessage={currentContent} />}
+                {activeType === 'phone' && (
+                    <PhoneForm
+                        mode="phone"
+                        onChange={onChange}
+                        initialValue={currentContent && activeType === 'phone' ? parsePhone(currentContent) : ''}
+                    />
+                )}
+                {activeType === 'sms' && (
+                    <PhoneForm
+                        mode="sms"
+                        onChange={onChange}
+                        initialValue={smsData.number}
+                        initialMessage={smsData.message || (initialType ? currentContent : '')} // fallback for simple text share
+                    />
+                )}
+                {activeType === 'whatsapp' && (
+                    <PhoneForm
+                        mode="whatsapp"
+                        onChange={onChange}
+                        initialValue={waData.number}
+                        initialMessage={waData.message}
+                    />
+                )}
                 {activeType === 'wifi' && <WifiForm onChange={onChange} initialData={currentContent && activeType === 'wifi' ? parseWifi(currentContent) : (initialType === 'wifi' ? initialContent : null)} />}
                 {activeType === 'vcard' && <VCardForm onChange={onChange} initialData={currentContent && activeType === 'vcard' ? parseVCard(currentContent) : (initialType === 'vcard' ? initialContent : null)} />}
                 {activeType === 'event' && <EventForm onChange={onChange} initialData={currentContent && activeType === 'event' ? parseEvent(currentContent) : (initialType === 'event' ? initialContent : null)} />}
